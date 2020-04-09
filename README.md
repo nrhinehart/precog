@@ -3,7 +3,7 @@
 # Purposes
 
 1. Serve as a partial reimplementation of the ESP multi-agent forecasting model
-2. Train a Deep Imitative Model for CARLA autonomous driving task
+2. Train a Deep Imitative Model for CARLA autonomous driving task. See [https://github.com/nrhine1/deep_imitative_models](https://github.com/nrhine1/deep_imitative_models).
 
 Paper:
 [http://openaccess.thecvf.com/content_ICCV_2019/papers/Rhinehart_PRECOG_PREdiction_Conditioned_on_Goals_in_Visual_Multi-Agent_Settings_ICCV_2019_paper.pdf](http://openaccess.thecvf.com/content_ICCV_2019/papers/Rhinehart_PRECOG_PREdiction_Conditioned_on_Goals_in_Visual_Multi-Agent_Settings_ICCV_2019_paper.pdf)
