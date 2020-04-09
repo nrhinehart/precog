@@ -1,0 +1,10 @@
+bijection:
+  class: bijection.convrnn.ConvRNN
+  params:
+    A: 5
+    kernel_size: 3
+    conv_filters: 32
+    n_conv_layers: 8
+    past_gru_units: 32
+    future_gru_units: 32
+    mlp_units: 32

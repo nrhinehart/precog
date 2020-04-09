@@ -1,0 +1,34 @@
+dataset:
+  class: precog.dataset.serialized_dataset.SerializedDataset
+  name: nuscenes_shuffle_A5
+  params:
+    root_path: /home/nrhinehart/data/datasets/nuscenes_open_shuffle_A5_v0
+    _max_A: 5
+    B: 10
+    T: 20
+    T_past: 10
+    load_bev: True
+    feature_pixels_per_meter: 2.
+    W: 100
+    fmt: 'dill'
+    train_suffix: '/train/'
+    val_suffix: '/val/'
+    test_suffix: '/test/'
+    match_prefix: "ma_datum_*"
+    sdt_bev: False
+    extra_params:
+      allow_horizon_mismatch: False
+      get_sdt_params:
+        stamp: True
+        sdt_clip_thresh: 0.5
+        # -> 10 pixels each side -> 5 meters each side
+        # -> 5 pixels each side -> 2.5 meters each side
+        sdt_zero_w: 8
+        sdt_zero_h: 3
+        sdt_params_name: "_clip0.5_stamp_neg3"
+        sdt_params:
+          clip_top: 1
+          clip_bottom: -3
+          normalize: true
+    
+    _name: 'nuscenes_shuffle_A5'

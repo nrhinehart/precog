@@ -1,0 +1,5 @@
+bijection:
+  class: bijection.independent_past_rnn.IndependentPastRNNBijection
+  params:
+    A: 5
+  

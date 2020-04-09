@@ -1,0 +1,39 @@
+main:
+  debug_bijection: false
+  compute_metrics: true
+  plot: true
+
+model:
+  directory: '/home/nrhinehart/raw_nfs/users/nrhinehart/esp_train_results/2020-02/02-27-17-39-30_dataset.trimodal_dataset.TrimodalDataset_precog.bijection.social_convrnn.SocialConvRNN'
+
+hardware:
+  allow_growth: true
+  per_process_gpu_memory_fraction: 0.3
+      
+hydra:
+  job_logging:
+    handlers:
+      console:
+        level: INFO
+      file:
+        level: DEBUG
+  run:
+    dir: /home/nrhinehart/data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.class}
+
+images:
+  ext: 'jpg'
+  figsize: [4, 4]
+
+split: 'test'
+
+dataset:
+  plot_allchannel: false
+
+plotting:
+  bev_kwargs:
+    onechannel: False
+    allchannel: False
+    fmt: 'carla'
+
+defaults:
+  - dataset: nuscenes_dataset

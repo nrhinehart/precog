@@ -1,0 +1,14 @@
+dataset:
+  class: precog.dataset.serialized_dataset.SerializedDataset
+  params:
+    root_path: /home/nrhinehart/data/datasets/carla_town01_A5_T20_json
+    max_A: 1
+    B: 10
+    T: 20
+    T_past: 3
+    load_bev: True
+    feature_pixels_per_meter: 2.
+    W: 100
+    fmt: "json"
+    _name: carla_town01_A1_T20
+

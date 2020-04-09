@@ -1,0 +1,16 @@
+optimizer:
+  class: optimizer.sgd_optimizer.SGDOptimizer
+  opt_method_choose_best: forward_KL
+  params:
+    learning_rate: 4e-4
+    debug: false
+    # This is in terms of global_steps on minibatches (not epochs)
+    plot_period: 500
+    evaluate_period: 5000
+    epochs: 10000000
+    record_to_sheets: true
+    save_before_train: true
+    plot_before_train: true
+    save_eager_figures: false
+    plot_without_samples: false
+    figsize: [8, 20]

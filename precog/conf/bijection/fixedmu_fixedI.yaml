@@ -1,0 +1,5 @@
+bijection:
+  class: bijection.fixedmu_fixedI.FixedMuFixedIBijection
+  params:
+    A: 5
+  

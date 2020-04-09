@@ -1,0 +1,4 @@
+objective:
+  class: precog.objective.forward_kl.ForwardKL
+  params:
+    K_perturb: 12

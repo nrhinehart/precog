@@ -1,0 +1,38 @@
+dataset:
+  class: precog.dataset.serialized_dataset.SerializedDataset
+  params:
+    root_path: /home/nrhinehart/data/dim_release_results/2020-03/03-03-18-54-44
+    _max_A: 1
+    B: 10
+    T: 20
+    T_past: 3
+    load_bev: True
+    sdt_bev: True
+    feature_pixels_per_meter: 2.
+    W: 100
+    fmt: "json"
+    train_suffix: '/train/'
+    val_suffix: '/val/'
+    test_suffix: '/test/'
+    match_prefix: "feed_*"
+    keyremap:
+      player_future: 'S_future_world_frame'
+      player_past: 'S_past_world_frame'
+      overhead_features: 'overhead_features'
+      player_yaw: 'yaws'
+    extra_params:
+      allow_horizon_mismatch: False
+      get_sdt_params:
+        stamp: True
+        sdt_clip_thresh: 0.5
+        # -> 10 pixels each side -> 5 meters each side
+        # -> 5 pixels each side -> 2.5 meters each side
+        sdt_zero_w: 8
+        sdt_zero_h: 3
+        sdt_params_name: "_clip0.5_stamp_neg3"
+        sdt_params:
+          clip_top: 1
+          clip_bottom: -3
+          normalize: true
+    _name: carla_town01_A1_T20_v1
+    

@@ -1,0 +1,4 @@
+objective:
+  class: objective.symmetric_cross_entropy.SymmetricCrossEntropy
+  params:
+    beta: 1e-1

@@ -1,0 +1,5 @@
+bijection:
+  class: bijection.contextless_rnn.ContextlessRNNBijection
+  params:
+    A: 5
+  

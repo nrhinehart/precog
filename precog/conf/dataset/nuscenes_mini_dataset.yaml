@@ -1,0 +1,14 @@
+dataset:
+  class: precog.dataset.serialized_dataset.SerializedDataset
+  name: nuscenes_mini_preproc_v5_A5
+  params:
+    root_path: /home/nrhinehart/data/datasets/nuscenes_mini_preproc_shuffle_v6_A2
+    max_A: 2
+    B: 10
+    T: 20
+    load_bev: True
+    feature_pixels_per_meter: 2.
+    W: 100
+    fmt: 'dill'
+    _name: 'nuscenes_mini'
+

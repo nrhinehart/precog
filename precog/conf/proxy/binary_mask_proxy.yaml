@@ -1,0 +1,3 @@
+
+proxy:
+  class: distribution.binary_mask_proxy.BinaryMaskProxy

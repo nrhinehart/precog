@@ -1,0 +1,2 @@
+sample_metric:
+  class: precog.sample_metric.minmsd.ESPMinMSD

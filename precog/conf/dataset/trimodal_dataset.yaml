@@ -1,0 +1,12 @@
+dataset:
+  class: precog.dataset.trimodal_dataset.TrimodalDataset
+  classname: TrimodalDataset
+  plot_allchannel: true
+  
+  params:
+    T: 20
+    T_past: 3
+    B: 10
+    perturb_epsilon: 1e-2
+    feature_pixels_per_meter: 2.
+    _name: "trimodal_dataset"

@@ -1,0 +1,26 @@
+output_dir: ''
+seed: 42
+A: 5
+version: 'v1.0-trainval'
+dataroot: '/home/nrhinehart/data/datasets/nuscenes_raw/'
+official_splits: true
+disjoint_scenes: true
+dry: 0
+offsets: [0.0]
+train: 0.8
+val: 0.1
+val_scene_idx: null
+n_max: 100000000000
+
+hydra:
+  job_logging:
+    root:
+       level: NOTSET
+    handlers:
+      console:
+        level: INFO
+      file:
+        level: DEBUG
+  run:
+    dir: /home/nrhinehart/data/preprocess_nuscenes_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}
+

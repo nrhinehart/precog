@@ -1,0 +1,3 @@
+
+proxy:
+  class: precog.distribution.empty_proxy.EmptyProxy

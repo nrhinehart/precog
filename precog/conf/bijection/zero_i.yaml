@@ -1,0 +1,5 @@
+bijection:
+  class: bijection.zero_I.ZeroIBijection
+  params:
+    A: 1
+  

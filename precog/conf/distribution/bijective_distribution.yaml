@@ -1,0 +1,4 @@
+distribution:
+  params:
+    name: foo
+    logdet_method: 'manual'

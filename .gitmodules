@@ -1,0 +1,4 @@
+[submodule "dep/inputs/flownet2"]
+	path = dep/inputs/flownet2
+	url = https://nj-gitlab.nec-labs.com/wongun/flownet2.git
+	branch = master
