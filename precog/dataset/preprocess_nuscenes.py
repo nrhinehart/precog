@@ -488,7 +488,7 @@ def create_preprocessed_dataset(output_dir,
                     'val_inds': val_scene_inds,
                     'test_inds': test_scene_inds,
                     'train_scenes': train_scenes,
-                    'val_scenes': train_scenes,
+                    'val_scenes': val_scenes,
                     'test_scenes': test_scenes}
 
     log.info("Have {} train, {} val, and {} test scenes".format(len(train_scene_inds), len(val_scene_inds), len(test_scene_inds)))
