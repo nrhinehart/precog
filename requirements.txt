@@ -25,7 +25,7 @@ google-auth-oauthlib==0.4.1
 google-pasta==0.1.7
 grpcio==1.24.1
 h5py==2.10.0
-httplib2==0.14.0
+httplib2==0.18.0
 Hydra==2.5
 hydra-core==0.9.0
 idna==2.8
