@@ -1,7 +1,8 @@
 dataset:
   class: precog.dataset.serialized_dataset.SerializedDataset
   params:
-    root_path: /home/nrhinehart/data/dim_release_results/2020-03/03-04-18-22-39
+    # root_path: /home/nrhinehart/data/dim_release_results/2020-03/03-04-18-22-39
+    root_path: /home/gutturale/code/data/precog_carla_dataset/town01
     _max_A: 1
     B: 10
     T: 20
@@ -14,12 +15,13 @@ dataset:
     train_suffix: '/train/'
     val_suffix: '/val/'
     test_suffix: '/test/'
-    match_prefix: "feed_*"
-    keyremap:
-      player_future: 'S_future_world_frame'
-      player_past: 'S_past_world_frame'
-      overhead_features: 'overhead_features'
-      player_yaw: 'yaws'
+    # match_prefix: "feed_*"
+    match_prefix: "ma_*"
+    # keyremap:
+    #   player_future: 'S_future_world_frame'
+    #   player_past: 'S_past_world_frame'
+    #   overhead_features: 'overhead_features'
+    #   player_yaw: 'yaws'
     extra_params:
       allow_horizon_mismatch: False
       get_sdt_params:

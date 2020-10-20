@@ -1,7 +1,7 @@
 dataset:
   class: precog.dataset.serialized_dataset.SerializedDataset
   params:
-    root_path: /home/nrhinehart/data/datasets/carla_town01_A5_T20_json
+    root_path: /home/gutturale/code/data/precog_carla_dataset/town01
     max_A: 5
     B: 10
     T: 20

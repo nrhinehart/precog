@@ -116,7 +116,10 @@ class SerializedDataset(interface.ESPDataset, minibatched_dataset.MinibatchedDat
         player_pasts = np.stack([np.asarray(k(_, 'player_past')) for _ in data], 0)[None]
         
         # (1, B)
-        player_yaws = np.stack([k(_, 'player_yaw') for _ in data], 0)[None]
+        try:
+            player_yaws = np.stack([k(_, 'player_yaw') for _ in data], 0)[None]
+        except:
+            player_yaws = np.zeros(player_experts.shape[0:2])
 
         # (O, B, T, d)
         if self.Other_count > 0:
@@ -127,8 +130,11 @@ class SerializedDataset(interface.ESPDataset, minibatched_dataset.MinibatchedDat
                 np.asarray(k(_, 'agent_pasts'))[:self.Other_count], axis=0, size=self.Other_count_past) for _ in data], 1)
                 
             # (O, B)
-            other_yaws = np.stack([npu.fill_axis_to_size(
-                k(_, 'agent_yaws')[:self.Other_count], axis=0, size=self.Other_count) for _ in data], 1)
+            try:
+                other_yaws = np.stack([npu.fill_axis_to_size(
+                    k(_, 'agent_yaws')[:self.Other_count], axis=0, size=self.Other_count) for _ in data], 1)
+            except:
+                other_yaws = np.zeros(other_experts.shape[0:2])
 
             # (A, B, Tpast, d)
             pasts = np.concatenate([player_pasts, other_pasts], 0)[..., -self.T_past:, :]
@@ -159,8 +165,9 @@ class SerializedDataset(interface.ESPDataset, minibatched_dataset.MinibatchedDat
 
                 assert(not any(light_strings))
                 light_strings = np.asarray(['NONE' for _ in data])
-        except AttributeError as e:
-            if self.fmt == 'json': raise AttributeError(e)
+        # except AttributeError as e:
+        except (AttributeError, KeyError) as e:
+            # if self.fmt == 'json': raise AttributeError(e)
             light_strings = np.asarray(['NONE' for _ in data])
             
         if experts.shape[-2] < self.T:

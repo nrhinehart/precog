@@ -20,7 +20,8 @@ log = logging.getLogger(__file__)
 np.set_printoptions(precision=10, suppress=True)
 
 @hydra.main(config_path='conf/esp_train_config.yaml')
-def main(cfg): optimize(prepare_for_optimization(cfg))
+def main(cfg):
+    optimize(prepare_for_optimization(cfg))
 
 def optimize(opt):
     # Fit the distribution according to the objective on the dataset.
