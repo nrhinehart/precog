@@ -5,6 +5,7 @@ import functools
 import itertools
 import pdb
 import os
+import math
 
 import hydra
 import scipy.stats
@@ -22,7 +23,7 @@ import precog.plotting as plotting
 
 log = logging.getLogger(os.path.basename(__file__))    
 
-def collect_sample(sessrun, inference):
+def collect_sample(sessrun, inference, savedir=None):
     """
 
     Notes
@@ -42,7 +43,8 @@ def collect_sample(sessrun, inference):
     multiple datasets in scatter: https://stackoverflow.com/questions/4270301/matplotlib-multiple-datasets-on-the-same-scatter-plot
     histogram series: https://stackoverflow.com/questions/52658364/how-to-generate-a-series-of-histograms-on-matplotlib/52659919
     embedding boxplots: https://stackoverflow.com/questions/5938459/combining-plt-plotx-y-with-plt-boxplot
-    gridspec: https://matplotlib.org/3.1.1/gallery/subplots_axes_and_figures/gridspec_nested.html#sphx-glr-gallery-subplots-axes-and-figures-gridspec-nested-py
+    gridspec: https://matplotlib.org/3.1.1/gallery/subplots_axes_and_figures/gridspec_nested.html
+    confidence ellipse: https://matplotlib.org/3.1.1/gallery/statistics/confidence_ellipse.html
 
     Todo
     ====
@@ -50,8 +52,8 @@ def collect_sample(sessrun, inference):
     """
     sampled_output = inference.sampled_output.to_numpy(sessrun)
     experts = inference.training_input.experts.to_numpy(sessrun)
-    print("sampled_output.rollout.S_grid_frame.shape", sampled_output.rollout.S_grid_frame.shape)
-    print("experts.S_future_grid_frame.shape", experts.S_future_grid_frame.shape)
+    # print("sampled_output.rollout.S_grid_frame.shape", sampled_output.rollout.S_grid_frame.shape)
+    # print("experts.S_future_grid_frame.shape", experts.S_future_grid_frame.shape)
     plasma_colors = cm.plasma(np.linspace(0, 1, inference.metadata.T))
     rainbow_colors = cm.plasma(np.linspace(0, 1, inference.metadata.K))
     all_esp_coords = sampled_output.rollout.S_grid_frame
@@ -68,13 +70,13 @@ def collect_sample(sessrun, inference):
         gs_x_histo = gs[0:2, 0].subgridspec(inference.metadata.T, 1)
         gs_y_histo = gs[2, 1:3].subgridspec(1, inference.metadata.T)
         ax_map     = fig.add_subplot(gs[0:2,1:3])
-        ax_map.text(0.05, 0.95, 'trajectories', 
+        ax_map.text(0.05, 0.95, 'trajectories  (x,y) in (m,m)', 
             transform=ax_map.transAxes, ha="left")
         ax_scatter = fig.add_subplot(gs[2,0])
-        ax_scatter.text(0.05, 0.9, 'residuals', 
+        ax_scatter.text(0.05, 0.9, 'residuals (x,y) in (m,m)', 
             transform=ax_scatter.transAxes, ha="left")
         ax_boxplot = fig.add_subplot(gs[3,:])
-        ax_boxplot.text(0.05, 0.9, 'L^2 error', 
+        ax_boxplot.text(0.05, 0.9, 'L^2 error (m)', 
             transform=ax_boxplot.transAxes, ha="left")
 
         # (K, T, D)
@@ -83,13 +85,14 @@ def collect_sample(sessrun, inference):
         expert_coords = all_expert_coords[b, a, :, :]
         # residuals between sampled coords and expert coords
         coords_diff = (esp_coords - expert_coords).reshape(-1, 2)
-        print("coords_diff.shape", coords_diff.shape)
         xlim = [np.min(coords_diff[:, 0]), np.max(coords_diff[:, 0])]
         ylim = [np.min(coords_diff[:, 1]), np.max(coords_diff[:, 1])]
         # ax[b + (a*inference.metadata.B), 0].plot(expert_coords[:, 0], expert_coords[:, 1],
         #         markersize=3, linewidth=1, marker='s')
-        ax_map.plot(expert_coords[:, 0], expert_coords[:, 1],
-                markersize=3, linewidth=1, marker='s')
+        xbins = math.ceil((xlim[1] - xlim[0]) / inference.metadata.K)
+        ybins = math.ceil((ylim[1] - ylim[0]) / inference.metadata.K)
+        expert_plot = ax_map.plot(expert_coords[:, 0], expert_coords[:, 1],
+                markersize=3, linewidth=1, marker='s', label='expert')
         for k, color in zip(range(inference.metadata.K), rainbow_colors):
             esp_coords = all_esp_coords[b, k, a, :, :]
             # ax[b + (a*inference.metadata.B), 0].plot(esp_coords[:, 0], esp_coords[:, 1],
@@ -137,23 +140,27 @@ def collect_sample(sessrun, inference):
             ax_boxplot.set_xticklabels(
                     [f"T={i}" for i in range(1, inference.metadata.T + 1, 1)])
 
+        ax_map.legend((expert_plot), ('expert'))
         scalarmappaple = cm.ScalarMappable(cmap=cm.plasma)
-        scalarmappaple.set_array(inference.metadata.T + 1)
-        plt.colorbar(scalarmappaple, ax=ax_boxplot)
+        scalarmappaple.set_array(range(1, inference.metadata.T + 1, 1))
+        plt.colorbar(scalarmappaple, ax=ax_boxplot, label='time step')
         ax_scatter.set_xlim(xlim)
         ax_scatter.set_ylim(ylim)
         gs.tight_layout(fig, pad=1)
-        plt.show()
-        return
+        if savedir:
+            plt.savefig(savedir)
+        else:
+            plt.show()
+            return
 
 @hydra.main(config_path='conf/esp_infer_config.yaml')
 def main(cfg):
-    # assert(cfg.main.plot or cfg.main.compute_metrics)
-    # output_directory = os.path.realpath(os.getcwd())
-    # images_directory = os.path.join(output_directory, 'images')
-    # os.mkdir(images_directory)
+    assert(cfg.main.plot or cfg.main.compute_metrics)
+    output_directory = os.path.realpath(os.getcwd())
+    images_directory = os.path.join(output_directory, 'images')
+    os.mkdir(images_directory)
     log.info("\n\nConfig:\n===\n{}".format(cfg.pretty()))
-    # atexit.register(logu.query_purge_directory, output_directory)
+    atexit.register(logu.query_purge_directory, output_directory)
 
     # Instantiate the session.
     sess = tfutil.create_session(
@@ -182,7 +189,6 @@ def main(cfg):
             break
 
         sessrun = functools.partial(sess.run, feed_dict=minibatch)
-        collect_sample(sessrun, inference)
-        return
+        collect_sample(sessrun, inference, savedir=images_directory)
     
 if __name__ == '__main__': main()
