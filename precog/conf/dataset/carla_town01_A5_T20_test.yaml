@@ -3,7 +3,8 @@ dataset:
   params:
     root_path: /home/gutturale/code/data/precog_carla_dataset/town01
     _max_A: 5
-    B: 10
+    # B: 10
+    B: 1
     T: 20
     T_past: 10
     load_bev: True
@@ -15,6 +16,7 @@ dataset:
     val_suffix: '/val/'
     # test_suffix: '/test/'
     test_suffix: '/test_small/'
+    # test_suffix: '/test_one/'
     # match_prefix: "feed_*"
     match_prefix: "ma_*"
     # keyremap:
@@ -36,5 +38,5 @@ dataset:
     #       clip_top: 1
     #       clip_bottom: -3
     #       normalize: true
-    _name: carla_town01_A1_T20_test
+    _name: carla_town01_A5_T20_test
     

@@ -1,6 +1,7 @@
 main:
   debug_bijection: false
   compute_metrics: true
+  # compute_metrics: false
   plot: true
 
 model:
@@ -24,7 +25,8 @@ hydra:
 
 images:
   ext: 'jpg'
-  figsize: [4, 4]
+  # figsize: [4, 4]
+  figsize: [64, 64]
 
 split: 'test'
 

@@ -44,6 +44,12 @@ def main(cfg):
     #     sampled_output = inference.sampled_output
     #     log_q_samples = sampled_output.base_and_log_q.log_q_samples
         
+    print("DEBUG")
+    for k, v in tensor_collections.items():
+        print(k, v)
+    print(inference.metadata)
+    print("DEBUG")
+
     # Instantiate the dataset.
     cfg.dataset.params.T = inference.metadata.T
     cfg.dataset.params.B = inference.metadata.B
@@ -55,13 +61,16 @@ def main(cfg):
         minibatch = dataset.get_minibatch(split=cfg.split, input_singleton=inference.training_input, is_training=False)
         if not cfg.main.compute_metrics:
             for t in inference.training_input.experts.tensors:
-                try: del minibatch[t]
-                except KeyError: pass
+                try:
+                    del minibatch[t]
+                except KeyError:
+                    pass
         if minibatch is None: break
         sessrun = functools.partial(sess.run, feed_dict=minibatch)
         try:
             # Run sampling and convert to numpy.
             sampled_output_np = inference.sampled_output.to_numpy(sessrun)
+            
             if cfg.main.compute_metrics:
                 # Get experts in numpy version.
                 experts_np = inference.training_input.experts.to_numpy(sessrun)
@@ -76,7 +85,8 @@ def main(cfg):
             raise v
         if cfg.main.plot:
             log.info("Plotting...")
-            for b in range(10):
+            # for b in range(10):
+            for b in range(inference.metadata.B):
                 im = plot.plot_sample(sampled_output_np,
                                       experts_np,
                                       b=b,
