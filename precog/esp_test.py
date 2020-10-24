@@ -132,10 +132,10 @@ def collect_sample(sessrun, inference):
             ax_boxplot.scatter(np.full(distances.shape[0], t + 1), distances,
                     s=5, facecolors='none', edgecolors=color)
             ax_boxplot.boxplot(distances, positions=[t + 1 + 0.2])
-            ax_boxplot.set_xlim([1, 21])
-            ax_boxplot.set_xticks(range(0, inference.metadata.T + 1, 1))
+            ax_boxplot.set_xlim([0, 21])
+            ax_boxplot.set_xticks(range(1, inference.metadata.T + 1, 1))
             ax_boxplot.set_xticklabels(
-                    [f"T={i}" for i in inference.metadata.T + 1])
+                    [f"T={i}" for i in range(1, inference.metadata.T + 1, 1)])
 
         scalarmappaple = cm.ScalarMappable(cmap=cm.plasma)
         scalarmappaple.set_array(inference.metadata.T + 1)
