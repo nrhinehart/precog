@@ -23,8 +23,15 @@ import precog.plotting as plotting
 
 log = logging.getLogger(os.path.basename(__file__))    
 
-def collect_sample(sessrun, inference, savedir=None):
+def collect_sample(sessrun, inference, save_partial_path=None):
     """
+
+    Parameters
+    ==========
+    sessrun : function
+    inference : interface.ESPInference
+    save_partial_path : path or None
+
 
     Notes
     =====
@@ -60,11 +67,7 @@ def collect_sample(sessrun, inference, savedir=None):
     all_expert_coords = experts.S_future_grid_frame
     esp_coords = None
     expert_coords = None
-    # fig, ax = plt.subplots(inference.metadata.B * inference.metadata.A, 3, figsize=(6, 10))
     for b, a in itertools.product(range(inference.metadata.B), range(inference.metadata.A)):
-
-        # ax.tick_params(labelbottom=False, labelleft=False)
-        # gridspec inside gridspec
         fig = plt.figure(figsize=(20, 15))
         gs = gridspec.GridSpec(4, 3, figure=fig, wspace=0.3, hspace=0.3)
         gs_x_histo = gs[0:2, 0].subgridspec(inference.metadata.T, 1)
@@ -87,16 +90,12 @@ def collect_sample(sessrun, inference, savedir=None):
         coords_diff = (esp_coords - expert_coords).reshape(-1, 2)
         xlim = [np.min(coords_diff[:, 0]), np.max(coords_diff[:, 0])]
         ylim = [np.min(coords_diff[:, 1]), np.max(coords_diff[:, 1])]
-        # ax[b + (a*inference.metadata.B), 0].plot(expert_coords[:, 0], expert_coords[:, 1],
-        #         markersize=3, linewidth=1, marker='s')
         xbins = math.ceil((xlim[1] - xlim[0]) / inference.metadata.K)
         ybins = math.ceil((ylim[1] - ylim[0]) / inference.metadata.K)
         expert_plot = ax_map.plot(expert_coords[:, 0], expert_coords[:, 1],
                 markersize=3, linewidth=1, marker='s', label='expert')
         for k, color in zip(range(inference.metadata.K), rainbow_colors):
             esp_coords = all_esp_coords[b, k, a, :, :]
-            # ax[b + (a*inference.metadata.B), 0].plot(esp_coords[:, 0], esp_coords[:, 1],
-            #         markersize=3, color=color, linewidth=1, marker='o', markerfacecolor='none')
             ax_map.plot(esp_coords[:, 0], esp_coords[:, 1],
                     markersize=3, color=color, linewidth=1, marker='o', markerfacecolor='none')
 
@@ -105,9 +104,6 @@ def collect_sample(sessrun, inference, savedir=None):
             expert_coords = all_expert_coords[b, a, t, :]
             coords_diff = esp_coords - expert_coords
 
-            # plot error as two dimensional histogram + histogram for per x, y axis
-            # ax[b + (a*inference.metadata.B), 1].scatter(coords_diff[:, 0], coords_diff[:, 1],
-            #         color=color)
             ax_scatter.scatter(coords_diff[:, 0], coords_diff[:, 1],
                     color=color)
             ax_x_histo = fig.add_subplot(gs_x_histo[inference.metadata.T - t - 1, 0])
@@ -127,11 +123,6 @@ def collect_sample(sessrun, inference, savedir=None):
             
             # whisker plots for Euclidean distance
             distances = np.linalg.norm(esp_coords - expert_coords, axis=1)
-            # ax[b + (a*inference.metadata.B), 2].scatter(
-            #         np.full(distances.shape[0], t), distances,
-            #         color=color)
-            # ax[b + (a*inference.metadata.B), 2].boxplot(
-            #     distances, positions=[t])
             ax_boxplot.scatter(np.full(distances.shape[0], t + 1), distances,
                     s=5, facecolors='none', edgecolors=color)
             ax_boxplot.boxplot(distances, positions=[t + 1 + 0.2])
@@ -147,11 +138,12 @@ def collect_sample(sessrun, inference, savedir=None):
         ax_scatter.set_xlim(xlim)
         ax_scatter.set_ylim(ylim)
         gs.tight_layout(fig, pad=1)
-        if savedir:
-            plt.savefig(savedir)
+        if save_partial_path:
+            plt.savefig("{}_b{}_a{}.png".format(save_partial_path, b, a))
         else:
             plt.show()
             return
+        plt.close('all')
 
 @hydra.main(config_path='conf/esp_infer_config.yaml')
 def main(cfg):
@@ -189,6 +181,10 @@ def main(cfg):
             break
 
         sessrun = functools.partial(sess.run, feed_dict=minibatch)
-        collect_sample(sessrun, inference, savedir=images_directory)
+        collect_sample(sessrun, inference,
+                save_partial_path=os.path.join(
+                    images_directory, "plot_{:05d}".format(count)))
+        count += 1
+                
     
 if __name__ == '__main__': main()
