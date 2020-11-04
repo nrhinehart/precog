@@ -15,8 +15,8 @@ dataset:
     train_suffix: '/train/'
     # train_suffix: '/train_small/'
     val_suffix: '/val/'
-    test_suffix: '/test/'
-    # test_suffix: '/test_small/'
+    # test_suffix: '/test/'
+    test_suffix: '/test_small/'
     # test_suffix: '/test_one/'
     # match_prefix: "feed_*"
     match_prefix: "ma_*"
