@@ -1,10 +1,10 @@
 dataset:
   class: precog.dataset.serialized_dataset.SerializedDataset
   params:
-    root_path: /home/gutturale/code/data/precog_carla_dataset/town01
+    root_path: /home/fireofearth/code/data/precog_carla_dataset/town01
     _max_A: 5
-    # B: 10
-    B: 1
+    B: 10
+    # B: 1
     T: 20
     T_past: 10
     load_bev: True
@@ -12,7 +12,8 @@ dataset:
     feature_pixels_per_meter: 2.
     W: 100
     fmt: "json"
-    train_suffix: '/train_small/'
+    train_suffix: '/train/'
+    # train_suffix: '/train_small/'
     val_suffix: '/val/'
 
     # full test suite

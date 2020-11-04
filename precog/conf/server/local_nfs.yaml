@@ -2,4 +2,4 @@ hydra:
   run:
     # dir: /home/nrhinehart/data/esp_train_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params._name}_${bijection.class}_${main.tag}
     #    Dir: /global/scratch/nrhinehart/data/esp_train_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params._name}_${bijection.class}_${main.tag}
-    dir: /home/gutturale/code/data/esp_train_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params._name}_${bijection.class}_${main.tag}
+    dir: /home/fireofearth/code/data/esp_train_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params._name}_${bijection.class}_${main.tag}

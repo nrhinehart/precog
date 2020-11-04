@@ -21,7 +21,7 @@ hydra:
         level: DEBUG
   run:
     # dir: /home/nrhinehart/data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.class}
-    dir: /home/gutturale/code/data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.class}
+    dir: /home/fireofearth/code/data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.class}
 
 images:
   ext: 'jpg'
