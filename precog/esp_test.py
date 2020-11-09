@@ -67,6 +67,28 @@ def collect_sample(sessrun, inference, save_partial_path=None):
     all_expert_coords = experts.S_future_grid_frame
     esp_coords = None
     expert_coords = None
+    
+    agg_fig = plt.figure(figsize=(15, 10))
+    ax_agg = agg_fig.subplots()
+    for t, color in zip(range(inference.metadata.T), plasma_colors):
+        # (B, K, A, T, D)
+        esp_coords = all_esp_coords[:, :, :, t, :].swapaxes(0,1)
+        # (B, A, T, D)
+        expert_coords = all_expert_coords[:, :, t, :]
+        coords_diff = esp_coords - expert_coords
+        coords_diff = coords_diff.reshape(-1, 2)
+        distances = np.linalg.norm(coords_diff, axis=1)
+        ax_agg.scatter(np.full(distances.shape[0], t + 1), distances,
+                s=5, facecolors='none', edgecolors=color)
+        ax_agg.boxplot(distances, positions=[t + 1 + 0.2])
+        ax_agg.set_xlim([0, 21])
+        ax_agg.set_xticks(range(1, inference.metadata.T + 1, 1))
+        ax_agg.set_xticklabels(
+                [f"T={i}" for i in range(1, inference.metadata.T + 1, 1)])
+        ax_agg.grid()
+    if save_partial_path:
+        plt.savefig("{}_aggregate.png".format(save_partial_path))
+
     for b, a in itertools.product(range(inference.metadata.B), range(inference.metadata.A)):
         fig = plt.figure(figsize=(20, 15))
         gs = gridspec.GridSpec(4, 3, figure=fig, wspace=0.3, hspace=0.3)
@@ -130,6 +152,7 @@ def collect_sample(sessrun, inference, save_partial_path=None):
             ax_boxplot.set_xticks(range(1, inference.metadata.T + 1, 1))
             ax_boxplot.set_xticklabels(
                     [f"T={i}" for i in range(1, inference.metadata.T + 1, 1)])
+            ax_boxplot.grid()
 
         ax_map.legend((expert_plot), ('expert'))
         scalarmappaple = cm.ScalarMappable(cmap=cm.plasma)
@@ -137,6 +160,7 @@ def collect_sample(sessrun, inference, save_partial_path=None):
         plt.colorbar(scalarmappaple, ax=ax_boxplot, label='time step')
         ax_scatter.set_xlim(xlim)
         ax_scatter.set_ylim(ylim)
+        ax_scatter.grid()
         gs.tight_layout(fig, pad=1)
         if save_partial_path:
             plt.savefig("{}_b{}_a{}.png".format(save_partial_path, b, a))

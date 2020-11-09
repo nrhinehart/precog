@@ -44,11 +44,11 @@ def main(cfg):
     #     sampled_output = inference.sampled_output
     #     log_q_samples = sampled_output.base_and_log_q.log_q_samples
         
-    print("DEBUG")
-    for k, v in tensor_collections.items():
-        print(k, v)
-    print(inference.metadata)
-    print("DEBUG")
+    # print("DEBUG")
+    # for k, v in tensor_collections.items():
+    #     print(k, v)
+    # print(inference.metadata)
+    # print("DEBUG")
 
     # Instantiate the dataset.
     cfg.dataset.params.T = inference.metadata.T
