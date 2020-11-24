@@ -14,14 +14,14 @@ dataset:
     fmt: "json"
     train_suffix: '/train/'
     val_suffix: '/val/'
-    # test_suffix: '/test/'
+    test_suffix: '/test/'
 
     # smaller datasets
     # train_suffix: '/train_small/'
     # test_suffix: '/test_small/'
 
     # experiment test suite to figure out whether ESP is using the inputs correctly
-    test_suffix: '/test_experiment/'
+    # test_suffix: '/test_experiment_0/'
 
     # test ESP using training data
     # test_suffix: '/test_trained/'

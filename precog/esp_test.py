@@ -85,7 +85,11 @@ def collect_sample(sessrun, inference, save_partial_path=None):
         ax_agg.set_xticks(range(1, inference.metadata.T + 1, 1))
         ax_agg.set_xticklabels(
                 [f"T={i}" for i in range(1, inference.metadata.T + 1, 1)])
-        ax_agg.grid()
+    ax_agg.grid()
+    ax_agg.text(0.05, 0.95,
+        "Aggregate L^2 error (m) across B*A={} vehicles".format(
+            inference.metadata.B*inference.metadata.A), 
+        transform=ax_agg.transAxes, ha="left", fontsize='medium')
     if save_partial_path:
         plt.savefig("{}_aggregate.png".format(save_partial_path))
 
@@ -95,14 +99,14 @@ def collect_sample(sessrun, inference, save_partial_path=None):
         gs_x_histo = gs[0:2, 0].subgridspec(inference.metadata.T, 1)
         gs_y_histo = gs[2, 1:3].subgridspec(1, inference.metadata.T)
         ax_map     = fig.add_subplot(gs[0:2,1:3])
-        ax_map.text(0.05, 0.95, 'trajectories  (x,y) in (m,m)', 
-            transform=ax_map.transAxes, ha="left")
+        ax_map.text(0.05, 0.95, 'trajectories  (x,y) in (m,m)',
+            transform=ax_map.transAxes, ha="left", fontsize='medium')
         ax_scatter = fig.add_subplot(gs[2,0])
         ax_scatter.text(0.05, 0.9, 'residuals (x,y) in (m,m)', 
-            transform=ax_scatter.transAxes, ha="left")
+            transform=ax_scatter.transAxes, ha="left", fontsize='medium')
         ax_boxplot = fig.add_subplot(gs[3,:])
         ax_boxplot.text(0.05, 0.9, 'L^2 error (m)', 
-            transform=ax_boxplot.transAxes, ha="left")
+            transform=ax_boxplot.transAxes, ha="left", fontsize='medium')
 
         # (K, T, D)
         esp_coords = all_esp_coords[b, :, a, :, :]
@@ -152,7 +156,8 @@ def collect_sample(sessrun, inference, save_partial_path=None):
             ax_boxplot.set_xticks(range(1, inference.metadata.T + 1, 1))
             ax_boxplot.set_xticklabels(
                     [f"T={i}" for i in range(1, inference.metadata.T + 1, 1)])
-            ax_boxplot.grid()
+        ax_map.grid()
+        ax_boxplot.grid()
 
         ax_map.legend((expert_plot), ('expert'))
         scalarmappaple = cm.ScalarMappable(cmap=cm.plasma)
