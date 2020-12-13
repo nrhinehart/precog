@@ -122,4 +122,5 @@ def query_purge_directory_and_writer(directory, writer):
     import utils.log_util as logu
     logu.query_purge_directory(directory)
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    main()

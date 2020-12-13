@@ -12,12 +12,13 @@ dataset:
     feature_pixels_per_meter: 2.
     W: 100
     fmt: "json"
-    train_suffix: '/train/'
+    # train_suffix: '/train/'
     val_suffix: '/val/'
     test_suffix: '/test/'
 
     # smaller datasets
     # train_suffix: '/train_small/'
+    train_suffix: '/train_generated/'
     # test_suffix: '/test_small/'
 
     # experiment test suite to figure out whether ESP is using the inputs correctly

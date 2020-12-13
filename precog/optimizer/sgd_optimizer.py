@@ -78,7 +78,10 @@ class SGDOptimizer(precog.interface.ESPOptimizer):
             self.input_singleton = None
         
         if self.plot_before_train:
-            minibatch = self.dataset.get_minibatch(mb_idx=0, split='train', input_singleton=self.input_singleton, is_training=True)
+            minibatch = self.dataset.get_minibatch(
+                    mb_idx=0, split='train',
+                    input_singleton=self.input_singleton,
+                    is_training=True)
             if is_eager: self._eager_plot(minibatch, global_step.numpy())
             else: self._static_plot(minibatch)
 
@@ -100,7 +103,9 @@ class SGDOptimizer(precog.interface.ESPOptimizer):
             self.dataset.reset_split('train')
             # Retrieve minibatches until the dataset runs out.
             while True:
-                minibatch = self.dataset.get_minibatch(split='train', input_singleton=self.input_singleton, is_training=True)
+                minibatch = self.dataset.get_minibatch(split='train',
+                        input_singleton=self.input_singleton,
+                        is_training=True)
                 if minibatch is None: break
                 # Step gradients.
                 if is_eager: self._eager_gradient_step(minibatch, global_step, epoch)
