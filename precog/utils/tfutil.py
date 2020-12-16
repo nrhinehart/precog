@@ -21,7 +21,7 @@ class ModelCollections:
 
             def _(x, name):
                 # Prevent adding non-Tensors to a collection
-                assert(isinstance(x, tf.Tensor))
+                assert(isinstance(x, (tf.Tensor, tf.Operation,)))
                 xset = getattr(self, name)
                 if x not in xset:
                     xset.add(x)

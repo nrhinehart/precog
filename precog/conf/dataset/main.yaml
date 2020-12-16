@@ -1,10 +1,12 @@
+#
+# This is the main YAML file use to configure datasets.
+# - Colin
 dataset:
   class: precog.dataset.serialized_dataset.SerializedDataset
   params:
     root_path: /home/fireofearth/code/data/precog_carla_dataset/town01
     _max_A: 5
     B: 10
-    # B: 1
     T: 20
     T_past: 10
     load_bev: True
@@ -18,8 +20,9 @@ dataset:
 
     # smaller datasets
     # train_suffix: '/train_small/'
-    train_suffix: '/train_generated/'
+    # val_suffix: '/val_small/'
     # test_suffix: '/test_small/'
+    train_suffix: '/train_generated/'
 
     # experiment test suite to figure out whether ESP is using the inputs correctly
     # test_suffix: '/test_experiment_0/'

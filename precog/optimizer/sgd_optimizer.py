@@ -46,16 +46,20 @@ class SGDOptimizer(precog.interface.ESPOptimizer):
         self._tf_optimizer = tfv1.train.RMSPropOptimizer(learning_rate)
         # Record collections for inputs and outputs.
         self.model_collections = tfutil.ModelCollections(
-            names=['sample_input',
-                   'infer_input',
-                   'shared_input',
-                   'sample_output', 'infer_output',
-                   'sample_metric', 'infer_metric',
-                   'intermediate_input', 'intermediate_label'])
+            names=['optimizing',
+                    'apply_gradients',
+                    'sample_input',
+                    'infer_input',
+                    'shared_input',
+                    'sample_output', 'infer_output',
+                    'sample_metric', 'infer_metric',
+                    'intermediate_input', 'intermediate_label'])
         self.record_to_sheets = self.record_to_sheets and espgsheetsu.gsheetsu.have_pygsheets
         if self.record_to_sheets:
             self.results = espgsheetsu.ESPResults(
-                tag=os.path.basename(self.output_directory), dataset=self.dataset.name, output_directory=self.output_directory)
+                tag=os.path.basename(self.output_directory),
+                dataset=self.dataset.name,
+                output_directory=self.output_directory)
         self.images_directory = os.path.join(self.output_directory, 'images')
         os.mkdir(self.images_directory)
 
@@ -196,7 +200,8 @@ class SGDOptimizer(precog.interface.ESPOptimizer):
         # Instantiate the training minimization criterion, some other stuff.
         log.info("Computing static-mode objective.")
         self.criterion, self.Hpq, self.ehat, self.expert_roll, self.Hqphat = self.objective(
-            self.model_distribution, self.sampled_output, self.data_distribution_proxy, self.input_singleton).unpack()
+            self.model_distribution, self.sampled_output,
+            self.data_distribution_proxy, self.input_singleton).unpack()
 
         # map_checks0 = tfutil.ensure_no_crossbatch_gradients(self.sampled_output.rollout.S_car_frames,
         #                                                     self.input_singleton.phi.overhead_features)
@@ -207,11 +212,12 @@ class SGDOptimizer(precog.interface.ESPOptimizer):
         all_checks = []
         if self.debug:
             # Ensure that the past positions can't affect the future positions of other items in the minibatch.
-            past_checks = tfutil.assert_no_crossbatch_gradients(self.sampled_output.rollout.S_world_frame,
-                                                                self.input_singleton.phi.S_past_car_frames,
-                                                                n_max=5,
-                                                                name_out="S_world_frame",
-                                                                name_in="S_past_car_frames")
+            past_checks = tfutil.assert_no_crossbatch_gradients(
+                self.sampled_output.rollout.S_world_frame,
+                self.input_singleton.phi.S_past_car_frames,
+                n_max=5,
+                name_out="S_world_frame",
+                name_in="S_past_car_frames")
             
             all_checks += past_checks
             # light_checks = tfutil.assert_no_crossbatch_gradients(self.sampled_output.rollout.S_world_frame,
@@ -235,6 +241,18 @@ class SGDOptimizer(precog.interface.ESPOptimizer):
         self.mean_ehat = tf.reduce_mean(self.ehat, name='mean_ehat')
         self.mean_Hqphat = tf.reduce_mean(self.Hqphat, name='mean_Hqphat')
         self.mean_sample_metric = tf.reduce_mean(self.sample_metric_tensor, name='mean_{}'.format(self.sample_metric))
+
+        self.model_collections.add_optimizing(
+                tf.identity(self.Hpq, name='Hpq'))
+        self.model_collections.add_optimizing(
+                tf.identity(self.criterion, name='criterion'))
+        self.model_collections.add_optimizing(self.ehat)
+        self.model_collections.add_optimizing(
+                tf.identity(self.Hqphat, name='Hqphat'))
+        self.model_collections.add_optimizing(
+                tf.identity(self.sample_metric_tensor, name='sample_metric_tensor'))
+        self.model_collections.add_optimizing(
+                tf.identity(self.mean_sample_metric, name='mean_sample_metric'))
 
         # Record inference and sample metrics.
         for tensor in [self.mean_Hpq, self.mean_ehat, self.Hpq, self.ehat]:
@@ -267,7 +285,8 @@ class SGDOptimizer(precog.interface.ESPOptimizer):
         with contextlib.ExitStack() as stack:
             for manager in managers:
                 stack.enter_context(manager)
-            apply_gradients = self._tf_optimizer.apply_gradients(dmin_criterion_dvars, global_step=global_step)
+            apply_gradients = self._tf_optimizer.apply_gradients(dmin_criterion_dvars, global_step=global_step, name='apply_gradients')
+        self.model_collections.add_apply_gradients(apply_gradients)
         # with tf.control_dependencies(all_checks):
         # Create separate summary ops for each split.
         
@@ -277,11 +296,14 @@ class SGDOptimizer(precog.interface.ESPOptimizer):
             summaries.append(tfv1.summary.scalar("{}/mean_ehat".format(s), self.mean_ehat))
             summaries.append(tfv1.summary.scalar("{}/mean_Hqphat".format(s), self.mean_Hqphat))
             summaries.append(tfv1.summary.scalar("{}/mean_{}".format(s, self.sample_metric), self.mean_sample_metric))
-            self.split_summaries[s] = tfv1.summary.merge(summaries)
+            self.split_summaries[s] = tfv1.summary.merge(summaries, name=f"{s}_summaries")
+            self.model_collections.add_optimizing(self.split_summaries[s])
             self.evaluate_targets[s] = [self.Hpq, self.ehat, self.Hqphat, self.sample_metric_tensor]
                     
         # Operations / Tensors to run for each gradient descent step.
-        self.gradient_step_targets = [global_step, apply_gradients, self.Hpq, self.ehat, self.split_summaries['train']]
+        self.gradient_step_targets = [
+                global_step, apply_gradients, self.Hpq, self.ehat,
+                self.split_summaries['train']]
 
         # Re-init for the optimizer.
         self.sess.run(tfv1.global_variables_initializer())        

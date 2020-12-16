@@ -262,7 +262,11 @@ def load_json(json_fn):
     """
     assert(os.path.isfile(json_fn))
     with open(json_fn, 'r') as f:
-        json_datum = json.load(f)
+        try:
+            json_datum = json.load(f)
+        except json.decoder.JSONDecodeError as e:
+            log.error(f"bad file {json_fn}")
+            raise e
     postprocessed_datum = from_json_dict(json_datum)
     return postprocessed_datum
     
