@@ -18,7 +18,8 @@ import precog.utils.log_util as logu
 log = logging.getLogger(os.path.basename(__file__))
 
 class SerializedDataset(interface.ESPDataset, minibatched_dataset.MinibatchedDataset):
-    input_keys = ['player_future', 'agent_futures', 'player_past', 'agent_pasts', 'player_yaw', 'agent_yaws', "overhead_features"]
+    input_keys = ['player_future', 'agent_futures', 'player_past', 'agent_pasts',
+            'player_yaw', 'agent_yaws', "overhead_features"]
     
     @logu.log_wrapi()
     @classu.member_initialize

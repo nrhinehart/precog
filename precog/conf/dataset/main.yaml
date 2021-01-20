@@ -4,7 +4,8 @@
 dataset:
   class: precog.dataset.serialized_dataset.SerializedDataset
   params:
-    root_path: /home/fireofearth/code/data/precog_carla_dataset/town01
+    # root_path: /home/fireofearth/code/data/precog_carla_dataset/town01
+    root_path: /media/external/data/precog_generated_dataset/town03
     _max_A: 5
     B: 10
     T: 20
@@ -14,7 +15,7 @@ dataset:
     feature_pixels_per_meter: 2.
     W: 100
     fmt: "json"
-    # train_suffix: '/train/'
+    train_suffix: '/train/'
     val_suffix: '/val/'
     test_suffix: '/test/'
 
@@ -22,7 +23,7 @@ dataset:
     # train_suffix: '/train_small/'
     # val_suffix: '/val_small/'
     # test_suffix: '/test_small/'
-    train_suffix: '/train_generated/'
+    # train_suffix: '/train_generate850/'
 
     # experiment test suite to figure out whether ESP is using the inputs correctly
     # test_suffix: '/test_experiment_0/'
@@ -31,7 +32,8 @@ dataset:
     # test_suffix: '/test_trained/'
     
     # match_prefix: "feed_*"
-    match_prefix: "ma_*"
+    # match_prefix: "ma_*"
+    match_prefix: "ep*"
     # keyremap:
     #   player_future: 'S_future_world_frame'
     #   player_past: 'S_past_world_frame'
@@ -50,5 +52,5 @@ dataset:
     #       clip_top: 1
     #       clip_bottom: -3
     #       normalize: true
-    _name: carla_town01_A5_T20_test
+    _name: main
     

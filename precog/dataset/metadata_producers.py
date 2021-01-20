@@ -42,5 +42,5 @@ PRODUCERS = {
     'carla_town01_A1_T20_v1_json': carla_town01_A1_T20_lightstate_metadata_producer,
     'carla_town01_A1_T20_v2_json': carla_town01_A1_T20_lightstate_metadata_producer,
     # Added
-    'carla_town01_A5_T20_test_json': default_metadata_producer,
+    'main_json': default_metadata_producer,
 }
