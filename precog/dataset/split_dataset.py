@@ -21,9 +21,8 @@ class MinibatchIndexException(MinibatchException):
 
 class MinibatchCollection(object):
     """Does minibatch index tracking and loading of raw sample data.
-    Responsible for figuring out which next minibatch to retrieve. 
-    
-    """
+    Responsible for figuring out which next minibatch to retrieve."""
+
     @classu.member_initialize
     def __init__(self, data_path, sample_ids, suffix,
             batch_size, cap=None, shuffle=False):
@@ -86,9 +85,9 @@ class MinibatchCollection(object):
         return raw_minibatch
         
 
-class CustomDataset(
-        interface.ESPDataset):
-    """
+class CustomDataset(object):
+    """Dataset corresponding to splits.
+
     Workflow
 
     1. load split file and construct sample paths from the sample IDs.
@@ -108,14 +107,17 @@ class CustomDataset(
             'test': 2}
 
     @classu.member_initialize
-    def __init__(self, data_path, split_path, B, W, suffix='json', **kwargs):
-        """
+    def __init__(self, data_path, split_path, name, B, A, T, W, suffix='json', **kwargs):
+        """Initialize
+
         Parameters
         ----------
         data_path : str
             The dataset root directory
         split_path : str
             Path to split file.
+        name : str
+            Name of the dataset we are loading.
         B : int
             Batch size
         suffix : str,optional
@@ -135,15 +137,16 @@ class CustomDataset(
                     self.data_path, val_ids, self.suffix, self.B),
             'test': MinibatchCollection(
                     self.data_path, test_ids, self.suffix, self.B)}
-    
+
     def reset_split(self, split):
         self.split_collections[split].reset()
 
     def process_minibatch(self, raw_minibatch, is_training):
-        """
+        """Process the minibatch before handing it to ESPPhi
+
         Based on SerializedDataset.get_minibatch() method.
-        Assumes that variables B, A, T, T_past, D of samples correspond to
-        the experiment.
+        Assumes that variables B, A, T, T_past, D, H, W, C
+        of samples correspond to the experiment.
 
         Parameters
         ----------
@@ -228,15 +231,16 @@ class CustomDataset(
 
     def get_minibatch(self, is_training, split='train',
             mb_idx=None, input_singleton=None):
-        """
+        """Get a minibatch.
+
         Parameters
         ----------
         mb_idx : int, optional
             The index of the minibatch in the split to use.
             Don't pass to get the next minibatch in sequence.
         """
-        # JSON object of the sample data for a batch.
         try:
+            # JSON object of the sample data for a batch.
             raw_minibatch = self.split_collections[split].fetch(mb_idx=mb_idx)
         except MinibatchIndexException:
             return None

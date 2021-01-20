@@ -1,4 +1,3 @@
-
 """
 1. First set up dataset directory with sample pattern:
 root/map/episode/sample_id
@@ -23,7 +22,8 @@ This will be a json file where each key represents a group
 """
 
 import os
-import precog.util as util
+import numpy as np
+import utility as util
 
 def gen_splits(n):
             """Generator of group indices for (train, val, test) set.
@@ -65,7 +65,7 @@ class ReadPathMixin(object):
             else:
                 patch_path_wildcard = os.path.join(patch_path_wildcard, '**')
         patch_path_wildcard = os.path.join(patch_path_wildcard,
-                f"*.{self.sample_fmt}")
+                f"*.{self.suffix}")
         patch_paths = glob.glob(os.path.join(patch_path_wildcard))
         return patch_paths
 
@@ -74,7 +74,7 @@ class CrossValidationSplitCreator(object):
 
     def __init__(self, config):
         self.config = config
-        self.save_split_path = config.split_path
+        self.save_split_path = config.save_split_path
 
     def save_split(self, split, n_groups, val, test):
         """
@@ -127,7 +127,7 @@ class SampleGroupCreator(ReadPathMixin):
         self.data_path = os.path.abspath(config.data_path)
         self.sample_pattern = util.create_sample_pattern(
                 config.sample_pattern)
-        self.sample_fmt = config.sample_fmt
+        self.suffix = config.suffix
         self.filter_labels = config.filter_labels
         self.sample_paths = self.get_sample_paths()
         
