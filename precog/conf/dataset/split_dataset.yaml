@@ -10,3 +10,4 @@ params:
   A: 5
   T: 20
   W: 100
+  _name: split_dataset

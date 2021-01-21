@@ -1,5 +1,6 @@
 import os
 import logging
+import json
 import numpy as np
 import utility as util
 
@@ -22,18 +23,22 @@ class MinibatchIndexException(MinibatchException):
         pass
 
 class MinibatchCollection(object):
-    """Does minibatch index tracking and loading of raw sample data.
+    """Does minibatch index tracking and loading of raw sample data for a sample set.
     Responsible for figuring out which next minibatch to retrieve."""
 
     @classu.member_initialize
     def __init__(self, data_path, sample_ids, suffix,
             batch_size, cap=None, shuffle=False):
         """
+        Parameters
+        ----------
+        sample_ids : list of str
+            List of sample IDs to get sample data from.
         """
         if cap is None:
-            self.__cap = len(self.sample_ids) // self.batch_size
+            self.__cap = None
         else:
-            self.__cap = min(cap, len(self.sample_ids) // self.batch_size)
+            self.__cap = cap
         self.__mb_idx = 0
         if self.shuffle:
             self.reshuffle()
@@ -45,9 +50,17 @@ class MinibatchCollection(object):
 
     @property
     def capacity(self):
-        return self.__cap
+        if self.__cap is None:
+            return len(self.sample_ids) // self.batch_size
+        else:
+            return min(self.__cap, len(self.sample_ids) // self.batch_size)
 
     def __mb_idx_to_data_indices(self, mb_idx):
+        """
+        Returns
+        -------
+        list of int
+        """
         return list(range(mb_idx * self.batch_size, (mb_idx + 1) * self.batch_size))
 
     def __sample_idx_to_filename(self, sample_idx):
@@ -55,7 +68,27 @@ class MinibatchCollection(object):
                 f"{self.sample_ids[sample_idx]}.{self.suffix}")
     
     def __sample_idx_to_data(self, sample_idx):
-        return util.load_json(self.__sample_idx_to_filename(sample_idx))
+        """Get sample data as JSON object given the sample's index in the collection.
+
+        Throws
+        ------
+        json.decoder.JSONDecodeError
+            If JSON file cannot be parsed.
+        """
+        filename = self.__sample_idx_to_filename(sample_idx)
+        try:
+            return util.load_json(filename)
+        except json.decoder.JSONDecodeError as e:
+            log.error(f"corrupted file {filename}")
+            raise e
+
+    def __purge_sample_by_idx(self, sample_idx):
+        """
+        Use this to remove files that are corrupted by index in collection.
+        Note: modifies the sample_ids attribute.
+        """
+        self.sample_ids[sample_idx], self.sample_ids[-1] = self.sample_ids[-1], self.sample_ids[sample_idx]
+        self.sample_ids.pop()
 
     def reset(self):
         self.__mb_idx = 0
@@ -65,6 +98,7 @@ class MinibatchCollection(object):
 
     def fetch(self, mb_idx=None):
         """Fetch raw minibatch data.
+        If one JSON sample file is corrupted then remove it from the list and refetch.   
 
         Parameters
         ----------
@@ -84,18 +118,25 @@ class MinibatchCollection(object):
             When there are no more minibatches in sequence,
             or mb_idx is larger than capacity.
         """
-        if mb_idx is None:
-            curr_mb_idx = self.__mb_idx
-        else:
-            curr_mb_idx = mb_idx
-        if curr_mb_idx >= self.capacity:
-            raise MinibatchIndexException("ran out of minibatches or index out of range.")
-        data_indices = self.__mb_idx_to_data_indices(curr_mb_idx)
-        raw_minibatch = util.map_to_list(self.__sample_idx_to_data, data_indices)
-        if mb_idx is None:
-            self.__mb_idx += 1
-        return raw_minibatch
-        
+        while True:
+            if mb_idx is None:
+                curr_mb_idx = self.__mb_idx
+            else:
+                curr_mb_idx = mb_idx
+            if curr_mb_idx >= self.capacity:
+                raise MinibatchIndexException("ran out of minibatches or index out of range.")
+            data_indices = self.__mb_idx_to_data_indices(curr_mb_idx)
+            raw_minibatch = [None]*len(data_indices)
+            for out_idx, sample_idx in enumerate(data_indices):
+                try:
+                    raw_minibatch[out_idx] = self.__sample_idx_to_data(sample_idx)
+                except json.decoder.JSONDecodeError as e:
+                    self.__purge_sample_by_idx(sample_idx)
+                    continue
+            if mb_idx is None:
+                self.__mb_idx += 1
+            return raw_minibatch
+
 
 class SplitDataset(object):
     """Dataset corresponding to splits.
@@ -139,6 +180,7 @@ class SplitDataset(object):
         suffix : str,optional
             Usually json
         """
+        self.max_A = self.A
         self.data_path = os.path.abspath(self.data_path)
         self.split_path = os.path.abspath(self.split_path)
         self.split = util.load_json(self.split_path)
@@ -285,4 +327,4 @@ class SplitDataset(object):
                     feature_pixels_per_meter=feature_pixels_per_meter,
                     **phi_kwargs)
         else:
-            return input_singleton.to_feed_dict(**phi_args)
+            return input_singleton.to_feed_dict(**phi_kwargs)
