@@ -1,11 +1,11 @@
 #
-# This is the main YAML file use to configure datasets.
+# This is the main YAML file use to configure loading of the original dataset.
 # - Colin
 dataset:
   class: precog.dataset.serialized_dataset.SerializedDataset
   params:
     # root_path: /home/fireofearth/code/data/precog_carla_dataset/town01
-    root_path: /media/external/data/precog_generated_dataset/town03
+    root_path: /media/external/data/precog_generate/datasets/20210112/town03
     _max_A: 5
     B: 10
     T: 20

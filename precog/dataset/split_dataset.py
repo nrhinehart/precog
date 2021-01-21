@@ -1,4 +1,6 @@
 import os
+import logging
+import numpy as np
 import utility as util
 
 import precog.interface as interface
@@ -37,6 +39,11 @@ class MinibatchCollection(object):
             self.reshuffle()
     
     @property
+    def position(self):
+        """Current index to minibatch in collection sequence."""
+        return self.__mb_idx
+
+    @property
     def capacity(self):
         return self.__cap
 
@@ -66,6 +73,11 @@ class MinibatchCollection(object):
             If provided then get the minibatch at mb_idx position in collection.
             Otherwise get the next conscutive minibatch in collection sequence.
         
+        Returns
+        -------
+        list of dict
+            dict of size
+
         Raises
         ------
         MinibatchIndexException
@@ -85,7 +97,7 @@ class MinibatchCollection(object):
         return raw_minibatch
         
 
-class CustomDataset(object):
+class SplitDataset(object):
     """Dataset corresponding to splits.
 
     Workflow
@@ -102,12 +114,16 @@ class CustomDataset(object):
     """
 
     SPLIT_INDICES = {
-            'train': 0,
-            'val': 1,
-            'test': 2}
+            'train': '0',
+            'val':   '1',
+            'test':  '2'}
 
+    @logu.log_wrapi()
     @classu.member_initialize
-    def __init__(self, data_path, split_path, name, B, A, T, W, suffix='json', **kwargs):
+    def __init__(self, data_path, split_path, name, B, A, T, W,
+            suffix='json', feature_pixels_per_meter=2.,
+            train_cap=None, val_cap=None, test_cap=None,
+            **kwargs):
         """Initialize
 
         Parameters
@@ -126,17 +142,20 @@ class CustomDataset(object):
         self.data_path = os.path.abspath(self.data_path)
         self.split_path = os.path.abspath(self.split_path)
         self.split = util.load_json(self.split_path)
-        train_ids = self.split[SPLIT_INDICES['train']]
-        val_ids   = self.split[SPLIT_INDICES['val']]
-        test_ids  = self.split[SPLIT_INDICES['test']]
+        train_ids = self.split[self.SPLIT_INDICES['train']]
+        val_ids   = self.split[self.SPLIT_INDICES['val']]
+        test_ids  = self.split[self.SPLIT_INDICES['test']]
 
         self.split_collections = {
             'train': MinibatchCollection(
-                    self.data_path, train_ids, self.suffix, self.B),
+                    self.data_path, train_ids, self.suffix, self.B,
+                    cap=self.train_cap),
             'val': MinibatchCollection(
-                    self.data_path, val_ids, self.suffix, self.B),
+                    self.data_path, val_ids, self.suffix, self.B,
+                    cap=self.val_cap),
             'test': MinibatchCollection(
-                    self.data_path, test_ids, self.suffix, self.B)}
+                    self.data_path, test_ids, self.suffix, self.B,
+                    cap=self.test_cap)}
 
     def reset_split(self, split):
         self.split_collections[split].reset()
@@ -152,6 +171,8 @@ class CustomDataset(object):
         ----------
         raw_minibatch : list of object
             A list of sample data serialized from JSON representing a batch of size B.
+        is_training : bool
+            Is this minibatch for training?
         """
         
         # player_future data is (T, D)
@@ -203,13 +224,13 @@ class CustomDataset(object):
         
         # pasts shape is (B, A, T_past, D)
         pasts = np.concatenate((player_past, agent_pasts,), axis=1)
-        # pasts shape is (B, A, T, D)
+        # experts shape is (B, A, T, D)
         experts = np.concatenate((player_future, agent_futures,), axis=1)
         # yaws shape is (B, A)
         yaws = np.concatenate((player_yaw, agent_yaws,), axis=1)
         # bevs shape is (B, H, W, C)
         bevs = np.asarray(
-                util.map_to_list(lambda data:, data['overhead_features'], raw_minibatch),
+                util.map_to_list(lambda data: data['overhead_features'], raw_minibatch),
                 dtype=np.float64)
         bevs = batch_center_crop(bevs, self.W, self.W)
 
@@ -229,6 +250,9 @@ class CustomDataset(object):
                 'metadata_list': metadata_list,
                 'is_training': is_training}
 
+    def fetch_raw_minibatch(self, split, mb_idx=None):
+        return self.split_collections[split].fetch(mb_idx=mb_idx)
+
     def get_minibatch(self, is_training, split='train',
             mb_idx=None, input_singleton=None):
         """Get a minibatch.
@@ -238,14 +262,27 @@ class CustomDataset(object):
         mb_idx : int, optional
             The index of the minibatch in the split to use.
             Don't pass to get the next minibatch in sequence.
+        input_singleton: precog.interface.ESPTrainingInput, optional
+            ???
+
+        Returns
+        -------
+        precog.interface.ESPTrainingInput or precog.utils.tfutil.FeedDict
+            If input_singleton is provided then return the training input and expert tensors to add to TF's computation graph.
+            Otherwise return a feed dict to pass to tf.Session.run()
         """
+        # feature_pixels_per_meter=np.asarray(self.feature_pixels_per_meter, np.float64),
         try:
             # JSON object of the sample data for a batch.
-            raw_minibatch = self.split_collections[split].fetch(mb_idx=mb_idx)
+            raw_minibatch = self.fetch_raw_minibatch(split, mb_idx=mb_idx)
         except MinibatchIndexException:
             return None
         phi_kwargs = self.process_minibatch(raw_minibatch, is_training)
         if input_singleton is None:
-            return interface.ESPTrainingInput.from_data(**phi_kwargs)
+            feature_pixels_per_meter=np.asarray(
+                    self.feature_pixels_per_meter, np.float64)
+            return interface.ESPTrainingInput.from_data(
+                    feature_pixels_per_meter=feature_pixels_per_meter,
+                    **phi_kwargs)
         else:
             return input_singleton.to_feed_dict(**phi_args)

@@ -1,0 +1,4 @@
+# @package _global_
+
+defaults:
+  - dataset: split_dataset

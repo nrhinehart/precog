@@ -22,6 +22,7 @@ This will be a json file where each key represents a group
 """
 
 import os
+import glob
 import numpy as np
 import utility as util
 
@@ -81,8 +82,8 @@ class CrossValidationSplitCreator(object):
         Parameters
         ----------
         """
-        fn = f"{n_groups}_val{util.underscore_list(val)}_test{util.underscore_list(test)}"
-        fp = os.path.join(os.path.abspath(self.save_split_path), fn)
+        name = f"{n_groups}_val{util.underscore_list(val)}_test{util.underscore_list(test)}"
+        fp = os.path.join(os.path.abspath(self.save_split_path), f"{name}.json")
         util.save_json(fp, split)
 
     def make_splits(self, groups):
@@ -106,9 +107,9 @@ class CrossValidationSplitCreator(object):
         n_groups = len(groups)
         for train, val, test in gen_splits(n_groups):
             split = {
-                    0: utils.merge_list_of_list([groups[idx] for idx in train]),
-                    1: utils.merge_list_of_list([groups[idx] for idx in val]),
-                    2: utils.merge_list_of_list([groups[idx] for idx in test])}
+                    0: util.merge_list_of_list([groups[idx] for idx in train]),
+                    1: util.merge_list_of_list([groups[idx] for idx in val]),
+                    2: util.merge_list_of_list([groups[idx] for idx in test])}
             np.random.shuffle(split[0])
             np.random.shuffle(split[1])
             np.random.shuffle(split[2])
@@ -132,8 +133,8 @@ class SampleGroupCreator(ReadPathMixin):
         self.sample_paths = self.get_sample_paths()
         
         self.group_by_words = ['map', 'episode']
-        self.sample_ids = util.create_sample_ids(paths,
-                sample_pattern=self.sample_pattern)
+        self.sample_ids = util.create_sample_ids(
+                self.sample_paths, sample_pattern=self.sample_pattern)
         self.mapped_ids, self.word_to_labels = util.group_ids(
                 self.sample_ids, self.group_by_words, self.sample_pattern)
     
@@ -149,19 +150,23 @@ class SampleGroupCreator(ReadPathMixin):
         dict of int: (list of str)
             Sample IDs grouped into n_groups groups.
         """
-        groups = { }
+        raw_groups = { }
         for idx in range(self.n_groups):
-            groups[idx] = [ ]
+            raw_groups[idx] = [ ]
 
         group_idx = 0
         np.random.shuffle(self.word_to_labels['episode'])
         np.random.shuffle(self.word_to_labels['map'])
         for episode in self.word_to_labels['episode']:
             for map_name in self.word_to_labels['map']:
-                groups[group_idx].append(self.mapped_ids[map_name][episode])
-                group_idx = (group_idx + 1) % self.n_groups
-        for idx, group in groups:
-            np.random.shuffle(group)
+                if self.mapped_ids[map_name][episode]:
+                    raw_groups[group_idx].append(self.mapped_ids[map_name][episode])
+                    group_idx = (group_idx + 1) % self.n_groups
+        # concatenate list of list
+        groups = { }
+        for idx, raw_group in raw_groups.items():
+            groups[idx] = util.merge_list_of_list(raw_group)
+            np.random.shuffle(groups[idx])
         return groups
     
     def generate_cross_validation_splits(self, groups=None):
