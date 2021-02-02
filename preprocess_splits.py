@@ -5,9 +5,9 @@ import argparse
 import precog.preprocess as preprocess
 import utility.arguments as uarguments
 
-DEFAULT_DATA_PATH = '/media/external/data/precog_generate/datasets/20210113'
-DEFAULT_SPLIT_PATH = '/media/external/data/precog_generate/splits'
-DEFAULT_SAMPLE_PATTERN = 'map/episode'
+DEFAULT_DATA_PATH = '/media/external/data/precog_generate/datasets/20210201'
+DEFAULT_SPLIT_PATH = '/media/external/data/precog_generate/splits/20210201/Town03'
+DEFAULT_SAMPLE_PATTERN = 'map/episode/agent'
 
 def parse_arguments():
     argparser = argparse.ArgumentParser(
@@ -40,15 +40,24 @@ def parse_arguments():
         type=str,
         help='pattern of sample file paths. Use this to tag samples')
     argparser.add_argument(
-        '--filter_labels',
+        '--filter-paths',
         nargs='+',
         type=uarguments.str_kv,
-        action=uarguments.ParseKVToDictAction,
+        action=uarguments.ParseKVToMergeDictAction,
         default={},
-        help="filter samples by specific tag.")
+        help="Labels to (inclusively) filter sample paths by.")
+    argparser.add_argument(
+        '--filter-labels',
+        nargs='+',
+        type=uarguments.str_kv,
+        action=uarguments.ParseKVToMergeDictAction,
+        default={},
+        help="Labels (inside JSON file) to (inclusively) filter sample files by.")
     return argparser.parse_args()
 
 def try_create_groups(config):
+    """Debugging
+    """
     group_creator = preprocess.SampleGroupCreator(config)
 
     print(f"found {len(group_creator.sample_ids)} samples.")
@@ -79,10 +88,8 @@ def main():
     config = parse_arguments()
     group_creator = preprocess.SampleGroupCreator(config)
 
-    logging.info(f"found {len(group_creator.sample_ids)} samples.")
+    logging.info(f"found {len(group_creator.sample_ids)} samples in dataset.")
     groups = group_creator.generate_groups()
-    for idx, group in groups.items():
-        logging.info(f"group {idx} has {len(group)} samples")
     group_creator.generate_cross_validation_splits(groups)
 
 if __name__ == '__main__':

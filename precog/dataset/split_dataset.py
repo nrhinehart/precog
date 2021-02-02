@@ -17,10 +17,13 @@ def batch_center_crop(arr, target_h, target_w):
     return arr[..., center[0] - target_h // 2:center[0] + target_h // 2, center[1] - target_w // 2:center[1] + target_w // 2, :]
 
 class MinibatchException(Exception):
-        pass
+    pass
 
 class MinibatchIndexException(MinibatchException):
-        pass
+    pass
+
+class BuildRawMinibatchException(MinibatchException):
+    pass
 
 class MinibatchCollection(object):
     """Does minibatch index tracking and loading of raw sample data for a sample set.
@@ -79,7 +82,7 @@ class MinibatchCollection(object):
         try:
             return util.load_json(filename)
         except json.decoder.JSONDecodeError as e:
-            log.error(f"corrupted file {filename}")
+            log.error(f"corrupted file {filename} " + repr(e))
             raise e
 
     def __purge_sample_by_idx(self, sample_idx):
@@ -127,12 +130,15 @@ class MinibatchCollection(object):
                 raise MinibatchIndexException("ran out of minibatches or index out of range.")
             data_indices = self.__mb_idx_to_data_indices(curr_mb_idx)
             raw_minibatch = [None]*len(data_indices)
-            for out_idx, sample_idx in enumerate(data_indices):
-                try:
-                    raw_minibatch[out_idx] = self.__sample_idx_to_data(sample_idx)
-                except json.decoder.JSONDecodeError as e:
-                    self.__purge_sample_by_idx(sample_idx)
-                    continue
+            try:
+                for out_idx, sample_idx in enumerate(data_indices):
+                    try:
+                        raw_minibatch[out_idx] = self.__sample_idx_to_data(sample_idx)
+                    except json.decoder.JSONDecodeError as e:
+                        self.__purge_sample_by_idx(sample_idx)
+                        raise e
+            except json.decoder.JSONDecodeError:
+                continue
             if mb_idx is None:
                 self.__mb_idx += 1
             return raw_minibatch
