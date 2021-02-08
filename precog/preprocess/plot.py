@@ -4,6 +4,8 @@ import json
 import random
 import glob
 import numpy as np
+import scipy
+import scipy.spatial
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
@@ -11,6 +13,7 @@ import utility as util
 import precog.utils.similarity_util as similarityu
 from precog.preprocess import SampleRetriever
 
+R = scipy.spatial.transform.Rotation
 COLORS = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
 
 class PlottingException(Exception):
@@ -171,6 +174,9 @@ def plot_impl(ax, datum):
         past = past.T
         ax.plot(*past, marker="d", linewidth=1, markersize=8, markerfacecolor='none',
                 color=COLORS[k])
+    
+    # player_yaw
+    # agent_yaws
 
 def plot_4(datum1, datum2, datum3, datum4, figsize=(16, 16)):
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=figsize)
@@ -198,10 +204,10 @@ class InspectSamplePlotter(SampleRetriever):
             try:
                 while True:
                     try:
-                        ids = random.sample(ids, 4)
+                        choice_ids = random.sample(ids, 4)
                     except ValueError:
                         raise PlottingException()
-                    fps = util.map_to_list(self.__sample_id_to_filepath, ids)
+                    fps = util.map_to_list(self.__sample_id_to_filepath, choice_ids)
                     try:
                         data = util.map_to_list(load_json, fps)
                         break

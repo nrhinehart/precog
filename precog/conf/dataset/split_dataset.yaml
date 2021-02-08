@@ -6,8 +6,10 @@ params:
   split_path: /media/external/data/precog_generate/splits/20210119/12_val0_test1.json
   name: carla_all_maps_B10_A5_T20
   feature_pixels_per_meter: 2.
+  # B: 5
   B: 10
   A: 5
   T: 20
   W: 100
+  # W: 200
   _name: split_dataset

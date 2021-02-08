@@ -101,7 +101,7 @@ class MinibatchCollection(object):
 
     def fetch(self, mb_idx=None):
         """Fetch raw minibatch data.
-        If one JSON sample file is corrupted then remove it from the list and refetch.   
+        If encounters corrupted JSON sample file then remove it from the list and refetch.   
 
         Parameters
         ----------
@@ -183,9 +183,14 @@ class SplitDataset(object):
             Name of the dataset we are loading.
         B : int
             Batch size
+        A : int
+            Number of agents including ego vehicle.
+        W : int
+            Overhead LIDAR view window size by pixel. Overhead view is square.
         suffix : str,optional
             Usually json
         """
+        assert(self.A >= 2)
         self.max_A = self.A
         self.data_path = os.path.abspath(self.data_path)
         self.split_path = os.path.abspath(self.split_path)
@@ -252,20 +257,20 @@ class SplitDataset(object):
         # agent_futures data is (A-1, T, D)
         # agent_futures is (B, A-1, T, D)
         agent_futures = np.asarray(
-                util.map_to_list(lambda data: data['agent_futures'], raw_minibatch),
+                util.map_to_list(lambda data: data['agent_futures'][:self.A - 1], raw_minibatch),
                 dtype=np.float64)
         
         # agent_pasts data is (A-1, T_past, D)
         # agent_pasts is (B, A-1, T_past, D)
         agent_pasts = np.asarray(
-                util.map_to_list(lambda data: data['agent_pasts'], raw_minibatch),
+                util.map_to_list(lambda data: data['agent_pasts'][:self.A - 1], raw_minibatch),
                 dtype=np.float64)
         
         # agent_yaws data is (A-1,)
         # agent_yaws is (B, A-1)
         try:
             agent_yaws = np.asarray(
-                util.map_to_list(lambda data: data['agent_yaws'], raw_minibatch),
+                util.map_to_list(lambda data: data['agent_yaws'][:self.A - 1], raw_minibatch),
                 dtype=np.float64)
         except:
             agent_yaws = np.zeros(agent_futures.shape[:2], dtype=np.float64)
@@ -276,10 +281,13 @@ class SplitDataset(object):
         experts = np.concatenate((player_future, agent_futures,), axis=1)
         # yaws shape is (B, A)
         yaws = np.concatenate((player_yaw, agent_yaws,), axis=1)
+
         # bevs shape is (B, H, W, C)
         bevs = np.asarray(
                 util.map_to_list(lambda data: data['overhead_features'], raw_minibatch),
                 dtype=np.float64)
+        # to try no LIDAR use this line:
+        # bevs = np.zeros((self.B, self.W, self.W, 4), dtype=np.float64)
         bevs = batch_center_crop(bevs, self.W, self.W)
 
         # extra unused(?) features
