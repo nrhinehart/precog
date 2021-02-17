@@ -22,7 +22,7 @@ def main(cfg):
     output_directory = os.path.realpath(os.getcwd())
     images_directory = os.path.join(output_directory, 'images')
     os.mkdir(images_directory)
-    log.info("\n\nConfig:\n===\n{}".format(cfg.pretty()))
+    # log.info("\n\nConfig:\n===\n{}".format(cfg.pretty()))
 
     atexit.register(logu.query_purge_directory, output_directory)
 
@@ -53,6 +53,10 @@ def main(cfg):
     # Instantiate the dataset.
     cfg.dataset.params.T = inference.metadata.T
     cfg.dataset.params.B = inference.metadata.B
+    cfg.dataset.params.A = inference.metadata.A
+    cfg.dataset.params.W = inference.phi_metadata.H
+    log.info("\n\nConfig:\n===\n{}".format(cfg.pretty()))
+    
     dataset = hydra.utils.instantiate(cfg.dataset, **cfg.dataset.params)
 
     log.info("Beginning evaluation. Model: {}".format(ckpt))    

@@ -13,8 +13,8 @@ import numpy as np
 from matplotlib.axes import Axes
 from pyquaternion import Quaternion
 
-from nuscenes.utils.geometry_utils import view_points, transform_matrix
-
+# from nuscenes.utils.geometry_utils import view_points, transform_matrix
+from precog.ext.nuscenes.utils.geometry_utils import view_points, transform_matrix
 
 class PointCloud(ABC):
     """
@@ -523,6 +523,16 @@ class Box:
         self.orientation = quaternion * self.orientation
         self.velocity = np.dot(quaternion.rotation_matrix, self.velocity)
 
+    def get_yaw(self):
+        """
+        :returns: <np.float>. Yaw in radians
+        """
+        # Project into xy plane. Assumes orientation quaternion is roughly about the z-axis.
+        v = np.dot(self.orientation.rotation_matrix, np.array([1, 0, 0]))
+
+        # Measure yaw using arctan.
+        return np.arctan2(v[1], v[0])
+
     def transform_to_pose(self, pose_record):
         self.translate(-np.array(pose_record['translation']))
         self.rotate(Quaternion(pose_record['rotation']).inverse)
@@ -560,18 +570,6 @@ class Box:
         :return: <np.float: 3, 4>. Bottom corners. First two face forward, last two face backwards.
         """
         return self.corners()[:, [2, 3, 7, 6]]
-
-    def get_yaw(self):
-        """
-
-        :returns: <np.float>. Yaw in radians
-        """
-        
-        # Project into xy plane. Assumes orientation quaternion is roughly about the z-axis.
-        v = np.dot(self.orientation.rotation_matrix, np.array([1, 0, 0]))
-
-        # Measure yaw using arctan.
-        return np.arctan2(v[1], v[0])
 
     def render(self,
                axis: Axes,

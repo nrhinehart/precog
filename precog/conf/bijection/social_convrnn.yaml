@@ -5,7 +5,8 @@ bijection:
     debug_eager: false
     mlpconf:
       mlp_units: 200
-      do_prernn_mlp: True
+      # disable unknown RNN
+      do_prernn_mlp: False
       n_prernn_layers: 2
       n_postrnn_layers: 2
       activation: "tanh"
@@ -18,10 +19,13 @@ bijection:
       use_future_rnn: True
     whiskerconf:
       use_whiskers: True
-      radii: [2, 4, 8]
+      # assume whisker conf from paper
+      radii: [1, 2, 4, 8, 16, 32]
+      # radii: [2, 4, 8]
       #radii: [2]
       arclength: 3.92699081699 #(5 * pi / 4)
-      n_samples: 14
+      # n_samples: 14
+      n_samples: 7
     cnnconf:
       n_conv_layers: 4
       conv_filters: 32
@@ -29,12 +33,14 @@ bijection:
       F: 8
       activation: "relu"
       do_batchnorm: False
-      create_residual_connections: True
+      # assume not using residual CNN
+      create_residual_connections: False
       append_cnn_input_to_cnn_output: False
       create_overhead_feature: False
     socialconf:
       social_mlp_units: 200
-      use_social_feats: False
+      # assume using SocialFeatMLP
+      use_social_feats: True
       use_social_map_feats: True
     lightconf:
       lightrep: 5      

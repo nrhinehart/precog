@@ -1,9 +1,13 @@
-output_dir: ''
+# output_dir: ''
+output_dir: '/home/fireofearth/code/data/nuscenes/'
 seed: 42
 A: 5
-version: 'v1.0-trainval'
-dataroot: '/home/nrhinehart/data/datasets/nuscenes_raw/'
-official_splits: true
+# version: 'v1.0-trainval'
+version: 'v1.0-mini'
+# dataroot: '/home/nrhinehart/data/datasets/nuscenes_raw/'
+dataroot: '/home/fireofearth/src/nuScenes/mini/'
+# official_splits: true
+official_splits: false
 disjoint_scenes: true
 dry: 0
 offsets: [0.0]
@@ -22,5 +26,6 @@ hydra:
       file:
         level: DEBUG
   run:
-    dir: /home/nrhinehart/data/preprocess_nuscenes_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}
+    # dir: /home/nrhinehart/data/preprocess_nuscenes_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}
+    dir: /home/fireofearth/code/data/preprocess_nuscenes_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}
 

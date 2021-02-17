@@ -14,9 +14,12 @@
 ## testing model on generated dataset
 # MODEL_DIRECTORY=/home/fireofearth/code/data/esp_train_results/2021-02/02-01-22-35-29_split_dataset_precog.bijection.social_convrnn.SocialConvRNN_
 # MODEL_DIRECTORY=/home/fireofearth/code/data/esp_train_results/2021-02/02-02-17-47-55_split_dataset_precog.bijection.social_convrnn.SocialConvRNN_
-MODEL_DIRECTORY=/home/fireofearth/code/data/esp_train_results/2021-02/test_with_w200
-DATA_PATH=/media/external/data/precog_generate/datasets/20210201
-SPLIT_PATH=/media/external/data/precog_generate/splits/20210201/Town03/12_val0_test1.json
+# MODEL_DIRECTORY=/home/fireofearth/code/data/esp_train_results/2021-02/test_with_w200
+# MODEL_DIRECTORY=/home/fireofearth/code/data/esp_train_results/2021-02/test_with_no_lidar
+# MODEL_DIRECTORY=/home/fireofearth/code/data/esp_train_results/2021-02/carla_Town03_B5_A3_T20_W200
+MODEL_DIRECTORY=/home/fireofearth/code/data/esp_train_results/2021-02/carla_Town03_B5_A3_T20_W200_with_yaw
+DATA_PATH=/media/external/data/precog_generate/datasets/20210209
+SPLIT_PATH=/media/external/data/precog_generate/splits/20210209/Town03/12_val0_test1.json
 python $PRECOGROOT/precog/esp_infer.py \
     dataset=split_dataset \
     dataset.params.data_path=$DATA_PATH \
