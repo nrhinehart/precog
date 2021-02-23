@@ -5,8 +5,8 @@ main:
   plot: true
 
 model:
+  # path to model save directory
   directory: null
-  # directory: '/home/nrhinehart/raw_nfs/users/nrhinehart/esp_train_results/2020-02/02-27-17-39-30_dataset.trimodal_dataset.TrimodalDataset_precog.bijection.social_convrnn.SocialConvRNN'
 
 hardware:
   allow_growth: true
@@ -21,7 +21,7 @@ hydra:
         level: DEBUG
   run:
     # dir: /home/nrhinehart/data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.class}
-    dir: /home/fireofearth/code/data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.class}
+    dir: /home/fireofearth//data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params.name}
 
 images:
   ext: 'jpg'

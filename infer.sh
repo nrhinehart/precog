@@ -17,9 +17,9 @@
 # MODEL_DIRECTORY=/home/fireofearth/code/data/esp_train_results/2021-02/test_with_w200
 # MODEL_DIRECTORY=/home/fireofearth/code/data/esp_train_results/2021-02/test_with_no_lidar
 # MODEL_DIRECTORY=/home/fireofearth/code/data/esp_train_results/2021-02/carla_Town03_B5_A3_T20_W200
-MODEL_DIRECTORY=/home/fireofearth/code/data/esp_train_results/2021-02/carla_Town03_B5_A3_T20_W200_with_yaw
-DATA_PATH=/media/external/data/precog_generate/datasets/20210209
-SPLIT_PATH=/media/external/data/precog_generate/splits/20210209/Town03/12_val0_test1.json
+MODEL_DIRECTORY=/home/fireofearth/data/esp_train_results/2021-02/02-22-14-39-49_carla_Town10_B10_A5_T20_no_yaw
+DATA_PATH=/home/fireofearth/data/precog_generate/datasets/20210217/30vehicles
+SPLIT_PATH=/home/fireofearth/data/precog_generate/splits/20210217/30vehicles/12_val0_test1.json
 python $PRECOGROOT/precog/esp_infer.py \
     dataset=split_dataset \
     dataset.params.data_path=$DATA_PATH \

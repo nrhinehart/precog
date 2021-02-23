@@ -2,9 +2,3 @@ hardware:
   allow_growth: True
   # per_process_gpu_memory_fraction: 0.2
   per_process_gpu_memory_fraction: 0.9
-
-hydra:
-  run:
-    # dir: /home/nrhinehart/data/esp_train_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params._name}_${bijection.class}_${main.tag}
-    dir: /home/fireofearth/code/data/esp_train_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params._name}_${bijection.class}_${main.tag}
-

@@ -12,7 +12,6 @@ chardet==3.0.4
 cloudpickle==1.1.1
 cycler==0.10.0
 Cython==0.29.21
-dataclasses==0.7
 decorator==4.4.0
 defusedxml==0.6.0
 descartes==1.1.0
@@ -121,8 +120,6 @@ termcolor==1.1.0
 terminado==0.8.2
 testpath==0.4.2
 toml==0.10.2
-torch==1.7.0
-torchvision==0.8.1
 tornado==6.0.3
 tqdm==4.38.0
 traitlets==4.3.3
