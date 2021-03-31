@@ -20,6 +20,17 @@
 MODEL_DIRECTORY=/home/fireofearth/data/esp_train_results/2021-02/02-22-14-39-49_carla_Town10_B10_A5_T20_no_yaw
 DATA_PATH=/home/fireofearth/data/precog_generate/datasets/20210217/30vehicles
 SPLIT_PATH=/home/fireofearth/data/precog_generate/splits/20210217/30vehicles/12_val0_test1.json
+
+MODEL_DIRECTORY=/home/fireofearth/data/esp_train_results/2021-02/02-23-21-55-35_carla_Town10_B10_A5_T20_no_yaw_small
+DATA_PATH=/home/fireofearth/data/precog_generate/datasets/20210223/30vehicles_small
+SPLIT_PATH=/home/fireofearth/data/precog_generate/splits/20210223/30vehicles_small/12_val0_test1.json
+
+MODEL_DIRECTORY=/home/fireofearth/data/esp_train_results/2021-02/02-24-10-59-31_carla_Town10_B10_A5_T20_no_yaw
+DATA_PATH=/home/fireofearth/data/precog_generate/datasets/20210223/30vehicles
+SPLIT_PATH=/home/fireofearth/data/precog_generate/splits/20210223/30vehicles/12_val0_test1.json
+
+MODEL_DIRECTORY=/home/fireofearth/data/esp_train_results/2021-03/03-23-16-58-45_carla_Town10_B10_A5_T20_no_yaw
+
 python $PRECOGROOT/precog/esp_infer.py \
     dataset=split_dataset \
     dataset.params.data_path=$DATA_PATH \

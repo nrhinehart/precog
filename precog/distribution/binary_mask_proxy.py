@@ -14,7 +14,8 @@ class BinaryMaskProxy(interface.ProxyDistribution):
 
     def log_prob(self, samples, *args, **kwargs):
         # Treat the first channel in the features as a cost map.
-        cost_map = samples.phi.overhead_features[..., 0]
+        # cost_map = samples.phi.overhead_features[..., 0]
+        cost_map = samples.phi.overhead_features[..., 1]
         # Reshape the rollouts for interpolation.
         rollout_reshape = tf.reshape(samples.rollout.S_grid_frame, (samples.phi_metadata.B, -1, 2))
         # Interpolate the costs.

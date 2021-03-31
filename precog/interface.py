@@ -78,7 +78,7 @@ class ESPJointTrajectoryBijection:
 @six.add_metaclass(ABCMeta)
 class ESPObjective:
     @classu.member_initialize
-    def __init__(self, K_perturb, perturb=True, perturb_epsilon=1e-2): pass
+    def __init__(self, K_perturb=12, perturb=True, perturb_epsilon=1e-2): pass
     
     @abstractmethod
     def call(self, model_distribution, model_distribution_samples, target_distribution_minibatch, data_epsilon, target_distribution_proxy):

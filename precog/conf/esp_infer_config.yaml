@@ -1,7 +1,6 @@
 main:
   debug_bijection: false
   compute_metrics: true
-  # compute_metrics: false
   plot: true
 
 model:
@@ -21,7 +20,7 @@ hydra:
         level: DEBUG
   run:
     # dir: /home/nrhinehart/data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.class}
-    dir: /home/fireofearth//data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params.name}
+    dir: /home/fireofearth/data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params.name}
 
 images:
   ext: 'jpg'
@@ -29,6 +28,9 @@ images:
   figsize: [8, 8]
 
 split: 'test'
+
+# use this to generate trajectories multiple times
+epochs: 1
 
 dataset:
   plot_allchannel: false

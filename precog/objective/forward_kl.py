@@ -37,11 +37,17 @@ class ForwardKL(interface.ESPObjective):
                 dtype=tf.float64)
             noisy_experts = tensoru.swap_axes(minibatch.experts.S_future_car_frames + noise, 0, 1)
             log_prob, expert_roll = density_distribution.log_prob(S_future=noisy_experts, phi=minibatch.phi)
+        
         forward_cross_entropy = tf.identity(-1 * log_prob, 'H_pq')
+        
         H_lb = npu.entropy_lower_bound(k=expert_roll.dimensionality, stddev=self.perturb_epsilon)
         ehat = tf.identity((forward_cross_entropy - H_lb) / expert_roll.dimensionality, 'ehat')
+        
         return interface.ESPObjectiveReturn(
-            min_criterion=forward_cross_entropy, forward_cross_entropy=forward_cross_entropy, ehat=ehat, rollout=expert_roll)    
+            min_criterion=forward_cross_entropy,
+            forward_cross_entropy=forward_cross_entropy,
+            ehat=ehat,
+            rollout=expert_roll)    
 
     def __repr__(self):
         return self.__class__.__name__ + "()"

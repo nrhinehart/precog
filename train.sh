@@ -1,11 +1,13 @@
 #!/bin/bash
 
-DATA_PATH=/home/fireofearth/data/precog_generate/datasets/20210217/30vehicles
-SPLIT_PATH=/home/fireofearth/data/precog_generate/splits/20210217/30vehicles/12_val0_test1.json
+DATA_PATH=/home/fireofearth/data/precog_generate/datasets/20210223/30vehicles
+SPLIT_PATH=/home/fireofearth/data/precog_generate/splits/20210223/30vehicles/12_val0_test1.json
 A=5
 NAME=carla_Town10_B10_A${A}_T20_no_yaw
 
 export CUDA_VISIBLE_DEVICES=0; python $PRECOGROOT/precog/esp_train.py \
+    objective=symmetric_cross_entropy \
+    proxy=binary_mask_proxy \
     dataset=split_dataset \
     dataset.params.data_path=$DATA_PATH \
     dataset.params.split_path=$SPLIT_PATH \

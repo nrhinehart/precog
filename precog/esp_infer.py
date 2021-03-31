@@ -89,7 +89,6 @@ def main(cfg):
             raise v
         if cfg.main.plot:
             log.info("Plotting...")
-            # for b in range(10):
             for b in range(inference.metadata.B):
                 im = plot.plot_sample(sampled_output_np,
                                       experts_np,

@@ -14,9 +14,15 @@ class SymmetricCrossEntropy(interface.ESPObjective):
     
     @classu.member_initialize
     def __init__(self, beta=0.0001):
-        pass
+        super().__init__()
         
-    def call(self, density_distribution, density_distribution_samples, target_distribution_proxy, minibatch, data_epsilon):
+    def call(self,
+            density_distribution,
+            density_distribution_samples,
+            target_distribution_proxy,
+            minibatch):
+            # minibatch,
+            # data_epsilon):
         """
 
         :param density_distribution: 
@@ -29,9 +35,13 @@ class SymmetricCrossEntropy(interface.ESPObjective):
         log_prob, roll = density_distribution.log_prob(S_future=minibatch.experts.S_future_car_frames, phi=minibatch.phi)
         forward_cross_entropy = -1 * log_prob
         reverse_cross_entropy = -1 * target_distribution_proxy.log_prob(density_distribution_samples)
-        H_lb = npu.entropy_lower_bound(k=roll.dimensionality, stddev=data_epsilon)
+        
+        # H_lb = npu.entropy_lower_bound(k=roll.dimensionality, stddev=data_epsilon)
+        H_lb = npu.entropy_lower_bound(k=roll.dimensionality, stddev=self.perturb_epsilon)
         ehat = (forward_cross_entropy - H_lb) / roll.dimensionality
+        
         min_criterion = forward_cross_entropy + self.beta * reverse_cross_entropy
+        
         return interface.ESPObjectiveReturn(
             min_criterion=min_criterion,
             forward_cross_entropy=forward_cross_entropy,

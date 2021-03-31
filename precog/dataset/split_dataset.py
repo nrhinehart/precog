@@ -248,6 +248,7 @@ class SplitDataset(object):
         #         util.map_to_list(lambda data: data['player_yaw'], raw_minibatch),
         #         dtype=np.float64)
         # player_yaw = np.swapaxes(player_yaw[None], 0, 1)
+        # to try zero yaw use this line:
         player_yaw = np.zeros(player_future.shape[:2], dtype=np.float64)
         
         # SerializedDataset uses precog.utils.np_util.fill_axis_to_size
@@ -269,6 +270,7 @@ class SplitDataset(object):
         # agent_yaws = np.asarray(
         #         util.map_to_list(lambda data: data['agent_yaws'][:self.A - 1], raw_minibatch),
         #         dtype=np.float64)
+        # to try zero yaw use this line:
         agent_yaws = np.zeros(agent_futures.shape[:2], dtype=np.float64)
         
         # pasts shape is (B, A, T_past, D)
