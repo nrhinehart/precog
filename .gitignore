@@ -1,6 +1,7 @@
 log
 .vscode/
 out/
+plots.*/
 
 *dill
 *turing

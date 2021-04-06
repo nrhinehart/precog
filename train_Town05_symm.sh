@@ -1,10 +1,11 @@
 #!/bin/bash
 
-DATA_PATH=/home/fireofearth/data/precog_generate/datasets/20210403
-SPLIT_PATH=/home/fireofearth/data/precog_generate/splits/20210403/Town03/12_val0_test1.json
+DATA_PATH=/home/fireofearth/data/precog_generate/datasets/20210402
+SPLIT_PATH=/home/fireofearth/data/precog_generate/splits/20210402/n_present5/Town05/12_val0_test1.json
 A=5
-MAP=Town03
+MAP=Town05
 NAME=carla_${MAP}_B10_A${A}_T20_10Hz_symm
+# using symmetric cross entropy
 
 export CUDA_VISIBLE_DEVICES=0; python $PRECOGROOT/precog/esp_train.py \
     proxy=binary_mask_proxy \
@@ -18,5 +19,5 @@ export CUDA_VISIBLE_DEVICES=0; python $PRECOGROOT/precog/esp_train.py \
     dataset.params.B=10 \
     optimizer.params.plot_before_train=False \
     optimizer.params.save_before_train=True \
-    optimizer.params.epochs=4 \
+    optimizer.params.epochs=5 \
     optimizer.params.evaluate_period=500 \

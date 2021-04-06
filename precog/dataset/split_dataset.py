@@ -2,6 +2,7 @@ import os
 import logging
 import json
 import numpy as np
+import scipy
 import utility as util
 
 import precog.interface as interface
@@ -15,6 +16,17 @@ def batch_center_crop(arr, target_h, target_w):
     *_, h, w, _ = arr.shape
     center = (h // 2, w // 2)
     return arr[..., center[0] - target_h // 2:center[0] + target_h // 2, center[1] - target_w // 2:center[1] + target_w // 2, :]
+
+R = scipy.spatial.transform.Rotation
+def rotate_ccw_about_origin(v, angle):
+    r = R.from_rotvec(np.array([0,0,1]) * angle).as_dcm()
+    v_shape = v.shape
+    v = np.reshape(v, (-1, 2))
+    v = np.pad(v, [(0,0), (0,1)])
+    v = (r @ v.T).T
+    v = v[:, :2]
+    v = np.reshape(v, v_shape)
+    return v
 
 class MinibatchException(Exception):
     pass
@@ -284,9 +296,15 @@ class SplitDataset(object):
         bevs = np.asarray(
                 util.map_to_list(lambda data: data['overhead_features'], raw_minibatch),
                 dtype=np.float64)
+        bevs = batch_center_crop(bevs, self.W, self.W)
         # to try no LIDAR use this line:
         # bevs = np.zeros((self.B, self.W, self.W, 4), dtype=np.float64)
-        bevs = batch_center_crop(bevs, self.W, self.W)
+
+        # to try rotate entire sample 90 degrees CCW:
+        # angle = np.pi / 2
+        # pasts = rotate_ccw_about_origin(pasts, angle)
+        # experts = rotate_ccw_about_origin(experts, angle)
+        # bevs = np.rot90(bevs, k=3, axes=(1,2))
 
         # extra unused(?) features
         metadata_list = interface.MetadataList()

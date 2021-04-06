@@ -215,22 +215,30 @@ class SampleGroupCreator(SampleRetriever):
             groups[idx] = util.merge_list_of_list(raw_group)
             np.random.shuffle(groups[idx])
 
+        total = 0
         for idx, group in groups.items():
             logging.info(f"group {idx} has {len(group)} samples")
+            total += len(group)
+        logging.info(f"In total there are {total} samples")
 
         # filter each group if necessary
+        # this is a time consuming process
         if self.filter_labels:
             log.info("filtering out samples by " + repr(self.filter_labels))
             for idx in groups.keys():
+                logging.info(f"Filtering group with ID {idx}...")
                 next_group = self.__filter_ids(groups[idx])
                 if next_group:
                     groups[idx] = next_group
                 else:
                     log.warning("Filtering left out all samples in a group!")
                     raise Exception("Filtering left out all samples in a group!")
-        
+
+            total = 0
             for idx, group in groups.items():
                 logging.info(f"group {idx} after filtering has {len(group)} samples")
+                total += len(group)
+            logging.info(f"After filtering there are {total} total samples")
 
         return groups
     

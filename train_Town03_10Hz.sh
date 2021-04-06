@@ -4,11 +4,11 @@ DATA_PATH=/home/fireofearth/data/precog_generate/datasets/20210403
 SPLIT_PATH=/home/fireofearth/data/precog_generate/splits/20210403/Town03/12_val0_test1.json
 A=5
 MAP=Town03
-NAME=carla_${MAP}_B10_A${A}_T20_10Hz_symm
+NAME=carla_${MAP}_B10_A${A}_T20_10Hz_no_yaw
 
+    # proxy=binary_mask_proxy \
+    # objective=symmetric_cross_entropy \
 export CUDA_VISIBLE_DEVICES=0; python $PRECOGROOT/precog/esp_train.py \
-    proxy=binary_mask_proxy \
-    objective=symmetric_cross_entropy \
     dataset=split_dataset \
     dataset.params.data_path=$DATA_PATH \
     dataset.params.split_path=$SPLIT_PATH \
