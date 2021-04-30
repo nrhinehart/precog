@@ -106,7 +106,7 @@ tornado==6.0.3
 tqdm==4.38.0
 traitlets==4.3.3
 uritemplate==3.0.0
-urllib3==1.25.7
+urllib3==1.25.8
 wcwidth==0.1.7
 webencodings==0.5.1
 Werkzeug==0.16.0
