@@ -1,9 +1,9 @@
 #!/bin/bash
 
 DATA_PATH=/home/fireofearth/data/precog_generate/datasets/20210402
-SPLIT_PATH=/home/fireofearth/data/precog_generate/splits/20210402/n_present5/Town04/12_val0_test1.json
+SPLIT_PATH=/home/fireofearth/data/precog_generate/splits/20210402/n_present5/Town07/12_val0_test1.json
 A=5
-MAP=Town04
+MAP=Town07
 NAME=carla_${MAP}_B10_A${A}_T20_10Hz_no_yaw
 
     # proxy=binary_mask_proxy \

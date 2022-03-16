@@ -8,6 +8,7 @@ import numpy as np
 import os
 import scipy.stats
 import skimage.io
+import omegaconf
 
 import precog.utils.log_util as logu
 import precog.utils.tfutil as tfutil
@@ -22,15 +23,12 @@ def main(cfg):
     output_directory = os.path.realpath(os.getcwd())
     images_directory = os.path.join(output_directory, 'images')
     os.mkdir(images_directory)
-    # log.info("\n\nConfig:\n===\n{}".format(cfg.pretty()))
-
     atexit.register(logu.query_purge_directory, output_directory)
 
     # Instantiate the session.
     sess = tfutil.create_session(
         allow_growth=cfg.hardware.allow_growth, per_process_gpu_memory_fraction=cfg.hardware.per_process_gpu_memory_fraction)
 
-    # Load the model and the tensor collections.
     log.info("Loading the model...")
     ckpt, graph, tensor_collections = tfutil.load_annotated_model(cfg.model.directory, sess)
     inference = interface.ESPInference(tensor_collections)
@@ -40,24 +38,18 @@ def main(cfg):
         metrics = {**infer_metrics, **sample_metrics}
         all_metrics = {_: [] for _ in metrics.keys()}
 
-    # if cfg.main.debug_bijection:
-    #     sampled_output = inference.sampled_output
-    #     log_q_samples = sampled_output.base_and_log_q.log_q_samples
-        
-    # print("DEBUG")
-    # for k, v in tensor_collections.items():
-    #     print(k, v)
-    # print(inference.metadata)
-    # print("DEBUG")
-
-    # Instantiate the dataset.
-    cfg.dataset.params.T = inference.metadata.T
-    cfg.dataset.params.B = inference.metadata.B
-    cfg.dataset.params.A = inference.metadata.A
-    cfg.dataset.params.W = inference.phi_metadata.H
-    log.info("\n\nConfig:\n===\n{}".format(cfg.pretty()))
-    
+    log.info("Load the Dataset...")
+    print(cfg.dataset)
+    try:
+        cfg.dataset.params.T = inference.metadata.T
+        cfg.dataset.params.B = inference.metadata.B
+        cfg.dataset.params.A = inference.metadata.A
+        cfg.dataset.params.W = inference.phi_metadata.H
+    except omegaconf.errors.ConfigAttributeError:
+        log.info("Failed setting dataset params") 
     dataset = hydra.utils.instantiate(cfg.dataset, **cfg.dataset.params)
+
+    log.info("\n\nConfig:\n===\n{}".format(cfg.pretty()))
 
     log.info("Beginning evaluation. Model: {}".format(ckpt))    
     count = 0
@@ -108,4 +100,7 @@ def main(cfg):
         for k, vals in all_metrics.items():
             log.info("Mean,sem '{}'={:.3f} +- {:.3f}".format(k, np.mean(vals), scipy.stats.sem(vals, axis=None)))
     
-if __name__ == '__main__': main()
+    atexit.unregister(logu.query_purge_directory)
+    
+if __name__ == '__main__':
+    main()

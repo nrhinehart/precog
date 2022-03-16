@@ -2,7 +2,6 @@ main:
   debug_bijection: false
   compute_metrics: true
   plot: true
-  label: inference
 
 model:
   # path to model save directory
@@ -10,7 +9,7 @@ model:
 
 hardware:
   allow_growth: true
-  per_process_gpu_memory_fraction: 0.3
+  per_process_gpu_memory_fraction: 0.9
       
 hydra:
   job_logging:
@@ -20,15 +19,11 @@ hydra:
       file:
         level: DEBUG
   run:
-    # dir: /home/nrhinehart/data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.class}
-    dir: /home/fireofearth/data/esp_infer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${main.label}
+    dir: /home/fireofearth/data/esp_transfer_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params.name}
 
 images:
-  ext: 'png'
-  # figsize: [4, 4]
-  figsize: [12, 12]
-
-split: 'test'
+  ext: 'jpg'
+  figsize: [8, 8]
 
 # use this to generate trajectories multiple times
 epochs: 1
@@ -43,4 +38,5 @@ plotting:
     fmt: 'carla'
 
 defaults:
-  - dataset: nuscenes_dataset
+  - optimizer: sgd_optimizer
+  - dataset: split_dataset

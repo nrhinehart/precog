@@ -62,7 +62,8 @@ def instantiate_session(cfg):
         log.info("Running in static mode")
         # Create the session now because it spits out lots of clutter.
         sess = tfutil.create_session(
-            allow_growth=cfg.hardware.allow_growth, per_process_gpu_memory_fraction=cfg.hardware.per_process_gpu_memory_fraction)
+                allow_growth=cfg.hardware.allow_growth,
+                per_process_gpu_memory_fraction=cfg.hardware.per_process_gpu_memory_fraction)
     return sess
 
 def instantiate_writer(cfg, output_directory):

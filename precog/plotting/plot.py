@@ -192,7 +192,18 @@ def plot_single_sampled_output(sampled_output, batch_index=0, fig=None, ax=None,
     S_past = sampled_output.phi.S_past_grid_frame
     limit = tensoru.size(sampled_output.phi.overhead_features, 1)
     # Plot future.
-    fig, ax = plot_joint_trajectory(S[batch_index], key='sampled_trajectories', render=False, marker='o', zorder=1, alpha=.4, fig=fig, ax=ax, limit=limit)
+    fig, ax = plot_joint_trajectory(
+            S[batch_index],
+            key='sampled_trajectories',
+            render=False,
+            marker='o',
+            zorder=1,
+            alpha=.3,
+            fig=fig,
+            ax=ax,
+            limit=limit,
+            markersize=5,
+            markerfacecolor=None)
     return fig, ax
 
 def plot_whiskers(rollout, batch_index=0, k_slice=slice(0,1), a_slice=slice(0,5), period=5, fig=None, ax=None, render=True):
@@ -259,7 +270,7 @@ def plot_expert(expert, batch_index, fig, ax, limit, render=False, **kwargs):
                                  ax=ax,
                                  marker='s',
                                  zorder=3,
-                                 alpha=0.5,
+                                 alpha=1,
                                  limit=limit,
                                  **kwargs)
 
@@ -386,7 +397,7 @@ def plot_feature_map(feature_map,
         fig.tight_layout()
     plot_figure('CNN_features_item_{}'.format(b), fig, partial_write_np_image_to_tb=partial_write_np_image_to_tb)
     
-def plot_past(S_past, b, fig, ax, limit, alpha=0.5):
+def plot_past(S_past, b, fig, ax, limit, alpha=1):
     # Plot past.
     plot_joint_trajectory(S_past[b][None], key='sampled_trajectories', render=False, fig=fig, ax=ax, marker='d', zorder=2, alpha=alpha, limit=limit)
     # Plot origin.
@@ -405,8 +416,9 @@ def plot_rollout(rollout, b=None, fig=None, ax=None):
                           ax=ax,
                           marker='o',
                           zorder=3,
-                          alpha=0.5,
-                          limit=limit)
+                          alpha=0.3,
+                          limit=limit,
+                          markersize=0.5)
 
 @logu.log_wrapd()
 def plot_sample(sampled_output, expert=None, b=0, figsize=(4,4), partial_write_np_image_to_tb=None, bev_kwargs={}):

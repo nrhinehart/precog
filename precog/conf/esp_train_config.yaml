@@ -17,7 +17,7 @@ hydra:
     # dir: /home/nrhinehart/data/esp_train_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params._name}_${bijection.class}_${main.tag}
     # dir: /global/scratch/nrhinehart/data/esp_train_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params._name}_${bijection.class}_${main.tag}
     # dir: /media/external/data/esp_train_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params._name}_${bijection.class}
-    dir: /home/fireofearth/data/esp_train_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params.name}
+    dir: /home/fireofearth/data/esp_train_results/${now:%Y-%m}/${now:%m-%d-%H-%M-%S}_${dataset.params._name}
 
 model:
   directory: null
@@ -29,7 +29,7 @@ distribution:
 
 bijection:
   params:
-    A: 1
+    A: 5
 
 dataset:
   plot_allchannel: false

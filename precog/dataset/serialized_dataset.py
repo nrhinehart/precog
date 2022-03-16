@@ -81,6 +81,7 @@ class SerializedDataset(interface.ESPDataset, minibatched_dataset.MinibatchedDat
 
     @property
     def name(self): return self._name
+    
     @property
     def train_data(self): return self._train_data
     @property
