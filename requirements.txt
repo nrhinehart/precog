@@ -96,7 +96,7 @@ smmap2==2.0.5
 tensorboard==1.14.0
 tensorflow-addons==0.8.3
 tensorflow-estimator==1.14.0
-tensorflow-gpu==1.14.0
+tensorflow-gpu==2.6.4
 tensorflow-plot==0.3.2
 tensorflow-probability==0.7.0
 termcolor==1.1.0
